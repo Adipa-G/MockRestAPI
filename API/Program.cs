@@ -1,5 +1,9 @@
+using System.IO.Abstractions;
+
 using API.Options;
 using API.Services;
+
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +12,8 @@ var configurationRoot = builder.Configuration.AddJsonFile("appsettings.json").Bu
 
 builder.Services
     .Configure<EndpointOptions>(options => configurationRoot.GetSection("Endpoints").Bind(options))
+    .AddSingleton<IMemoryCache, MemoryCache>()
+    .AddSingleton<IFileSystem, FileSystem>()
     .AddScoped<GlobalPathsHandlerService>()
     .AddScoped<SwaggerService>();
 

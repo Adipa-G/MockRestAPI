@@ -1,0 +1,44 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Test Swagger",
+    "version": "1.0.11"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:4030/api/v3"
+    }
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "summary": "ping",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ping"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Ping": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}

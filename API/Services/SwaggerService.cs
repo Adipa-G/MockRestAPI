@@ -1,4 +1,8 @@
-﻿using API.Options;
+﻿using System.IO.Abstractions;
+
+using API.Options;
+
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
@@ -11,12 +15,18 @@ namespace API.Services
     {
         private readonly ILogger<SwaggerService> _logger;
         private readonly EndpointOptions _endpointOptions;
-        
+        private readonly IMemoryCache _memoryCache;
+        private readonly IFileSystem _fileSystem;
+
         public SwaggerService(ILogger<SwaggerService> logger,
-            IOptions<EndpointOptions> endpointOptions)
+            IOptions<EndpointOptions> endpointOptions,
+            IMemoryCache memoryCache,
+            IFileSystem fileSystem)
         {
             _logger = logger;
             _endpointOptions = endpointOptions.Value;
+            _memoryCache = memoryCache;
+            _fileSystem = fileSystem;
         }
 
         public async Task<string> GetSwaggerJson(string baseUrl, string apiName)
@@ -40,6 +50,12 @@ namespace API.Services
 
         public async Task<OpenApiDocument?> GetOpenApiDocument(string baseUrl, string apiName)
         {
+            var cacheKey = $"open-api-document-{apiName}";
+            if (_memoryCache.TryGetValue(cacheKey, out OpenApiDocument? doc))
+            {
+                return doc;
+            }
+
             var apiDef = _endpointOptions.Apis.FirstOrDefault(api => api.ApiName == apiName);
             if (apiDef == null)
             {
@@ -55,17 +71,13 @@ namespace API.Services
             }
 
             var swaggerPath = Path.Combine(dir.FullName, apiDef.SwaggerLocation);
-            if (File.Exists(swaggerPath))
+            if (_fileSystem.File.Exists(swaggerPath))
             {
-                await using var fileStream = File.Open(swaggerPath, FileMode.Open);
-                var doc = new OpenApiStreamReader().Read(fileStream, out var diagnostic);
-                if (doc == null)
+                await using var fileStream = _fileSystem.File.Open(swaggerPath, FileMode.Open);
+                OpenApiDiagnostic? diagnostic = null;
+                try
                 {
-                    var diagnosticJson = JsonConvert.SerializeObject(diagnostic);
-                    _logger.LogError("Could not parse the open api spec. Diagnostic details : {diagnostic}", diagnosticJson);
-                }
-                else
-                {
+                    doc = new OpenApiStreamReader().Read(fileStream, out diagnostic);
                     doc.Servers = new List<OpenApiServer>()
                     {
                         new()
@@ -73,6 +85,12 @@ namespace API.Services
                             Url = $"{baseUrl}/{apiName}"
                         }
                     };
+                    _memoryCache.Set(cacheKey, doc, TimeSpan.FromSeconds(60));
+                }
+                catch (Exception e)
+                {
+                    var diagnosticJson = JsonConvert.SerializeObject(diagnostic);
+                    _logger.LogError(e,"Could not parse the open api spec. Diagnostic details : {diagnostic}", diagnosticJson);
                 }
                 return doc;
             }
@@ -80,9 +98,9 @@ namespace API.Services
             return null;
         }
 
-        private DirectoryInfo? GetBaseDirectory()
+        private IDirectoryInfo? GetBaseDirectory()
         {
-            var dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            var dir = _fileSystem.DirectoryInfo.New(AppDomain.CurrentDomain.BaseDirectory);
             do
             {
                 if (dir.GetDirectories().Any(d => d.Name == _endpointOptions.RootFolderName))
@@ -90,10 +108,7 @@ namespace API.Services
                     dir = dir.GetDirectories().FirstOrDefault(d => d.Name == _endpointOptions.RootFolderName);
                     break;
                 }
-                else
-                {
-                    dir = dir.Parent;
-                }
+                dir = dir.Parent;
             } while (dir?.Parent != null);
             return dir;
         }
