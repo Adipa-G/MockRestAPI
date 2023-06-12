@@ -15,8 +15,9 @@ builder.Services
     .AddSingleton<IMemoryCache, MemoryCache>()
     .AddSingleton<IFileSystem, FileSystem>()
     .AddHttpClient()
-    .AddScoped<GlobalPathsHandlerService>()
-    .AddScoped<SwaggerService>();
+    .AddScoped<IGlobalPathsHandlerService, GlobalPathsHandlerService>()
+    .AddScoped<ISwaggerService,SwaggerService>()
+    .AddScoped<ISwaggerExampleResponseBuilderService, SwaggerExampleResponseBuilderService>();
 
 var app = builder.Build();
 
@@ -40,7 +41,7 @@ if (endpointOptions?.Value != null)
 
 app.Run(async (context) =>
 {
-    var handlerService = context.RequestServices.GetService<GlobalPathsHandlerService>();
+    var handlerService = context.RequestServices.GetService<IGlobalPathsHandlerService>();
     if (handlerService != null)
     {
         await handlerService.HandleAsync(context);

@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace API.Services
 {
-    public class SwaggerService
+    public class SwaggerService : ISwaggerService
     {
         private readonly ILogger<SwaggerService> _logger;
         private readonly EndpointOptions _endpointOptions;
@@ -32,9 +32,9 @@ namespace API.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<string> GetSwaggerJson(string baseUrl, string apiName)
+        public async Task<string> GetSwaggerJsonAsync(string baseUrl, string apiName)
         {
-            var doc = await GetOpenApiDocument(baseUrl, apiName);
+            var doc = await GetOpenApiDocumentAsync(baseUrl, apiName);
             if (doc == null)
             {
                 return string.Empty;
@@ -51,7 +51,7 @@ namespace API.Services
             return json;
         }
 
-        public async Task<OpenApiDocument?> GetOpenApiDocument(string baseUrl, string apiName)
+        public async Task<OpenApiDocument?> GetOpenApiDocumentAsync(string baseUrl, string apiName)
         {
             var cacheKey = $"open-api-document-{apiName}";
             if (_memoryCache.TryGetValue(cacheKey, out OpenApiDocument? doc))
@@ -62,7 +62,7 @@ namespace API.Services
             var apiDef = _endpointOptions.Apis.FirstOrDefault(api => api.ApiName == apiName);
             if (apiDef == null)
             {
-                _logger.LogError("Could not find the API definition for {apiName} in the appsettings.json file", apiName);
+                _logger.LogError("Could not find the API definition for API : [{apiName}] in the appsettings.json file", apiName);
                 return null;
             }
 
@@ -81,7 +81,7 @@ namespace API.Services
                 catch (Exception e)
                 {
                     var diagnosticJson = JsonConvert.SerializeObject(diagnostic);
-                    _logger.LogError(e, "Could not parse the open api spec. Diagnostic details : {diagnostic}",
+                    _logger.LogError(e, "Could not parse the open api spec. Diagnostic details : [{diagnostic}]",
                         diagnosticJson);
                 }
             }
@@ -99,7 +99,7 @@ namespace API.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error trying to get the swagger file from {url} for the api {apiName}", apiDef.SwaggerLocation, apiName);
+                _logger.LogError(e, "Error trying to get the swagger file from URL: [{url}] for the api API: [{apiName}]", apiDef.SwaggerLocation, apiName);
                 return null;
             }
         }
@@ -112,7 +112,7 @@ namespace API.Services
                 if (dir == null)
                 {
                     _logger.LogError(
-                        "Could not find the directory {baseDirectory} in either the application directory or any of the parent directories",
+                        "Could not find the Directory : [{baseDirectory}] in either the application directory or any of the parent directories",
                         _endpointOptions.RootFolderName);
                     return Task.FromResult((Stream?)null);
                 }
@@ -125,14 +125,14 @@ namespace API.Services
                 }
                 else
                 {
-                    _logger.LogError("Could not find the swagger file in path {swaggerPath} for the api {apiName}", swaggerPath,
+                    _logger.LogError("Could not find the swagger file in Path : [{swaggerPath}] for the API : [{apiName}]", swaggerPath,
                         apiName);
                     return Task.FromResult((Stream?)null);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(e,"Unknown error trying to open the swagger file for the api {apiName}", apiName);
+                _logger.LogError(e,"Unknown error trying to open the swagger file for the API : [{apiName}]", apiName);
                 return Task.FromResult((Stream?)null);
             }
         }

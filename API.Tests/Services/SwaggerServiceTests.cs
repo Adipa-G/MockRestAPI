@@ -41,7 +41,7 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenCacheEntry_WhenGetOpenApiDocument_ThenReturnFromCache()
+        public async Task GivenCacheEntry_WhenGetOpenApiDocumentAsync_ThenReturnFromCache()
         {
             //Arrange
             var cacheKey = $"open-api-document-{ApiName}";
@@ -54,14 +54,14 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
 
             //Assert
             resultDoc.Should().Be(openApiDocument);
         }
 
         [Fact]
-        public async Task GivenNoApiDef_WhenGetOpenApiDocument_ThenReturnNull()
+        public async Task GivenNoApiDef_WhenGetOpenApiDocumentAsync_ThenReturnNull()
         {
             //Arrange
             _endpointOptions.Value.Returns(new EndpointOptions()
@@ -74,7 +74,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -82,7 +82,7 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenUnableToFindBaseDirectory_WhenGetOpenApiDocument_ThenReturnNull()
+        public async Task GivenUnableToFindBaseDirectory_WhenGetOpenApiDocumentAsync_ThenReturnNull()
         {
             //Arrange
             var apiDefDirectoryName = "apiDefs";
@@ -101,7 +101,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -109,7 +109,7 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenFileDoesNotExists_WhenGetOpenApiDocument_ThenReturnNull()
+        public async Task GivenFileDoesNotExists_WhenGetOpenApiDocumentAsync_ThenReturnNull()
         {
             //Arrange
             var apiDefDirectoryName = "apiDefs";
@@ -135,7 +135,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -143,7 +143,7 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenUnknownErrorOpeningTheFile_WhenGetOpenApiDocument_ThenReturnNull()
+        public async Task GivenUnknownErrorOpeningTheFile_WhenGetOpenApiDocumentAsync_ThenReturnNull()
         {
             //Arrange
             var apiDefDirectoryName = "apiDefs";
@@ -169,7 +169,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -177,7 +177,7 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenUnableToGetFileFromWeb_WhenGetOpenApiDocument_ThenReturnNull()
+        public async Task GivenUnableToGetFileFromWeb_WhenGetOpenApiDocumentAsync_ThenReturnNull()
         {
             //Arrange
             var swggerUrl = "http://localhost/swagger";
@@ -197,7 +197,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -205,7 +205,7 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenUnableToParseDocument_WhenGetOpenApiDocument_ThenReturnNull()
+        public async Task GivenUnableToParseDocument_WhenGetOpenApiDocumentAsync_ThenReturnNull()
         {
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new EndpointOptions()
@@ -234,7 +234,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -242,7 +242,7 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenValidDocument_WhenGetOpenApiDocument_ThenReturnTheAPIDefinition()
+        public async Task GivenValidDocument_WhenGetOpenApiDocumentAsync_ThenReturnTheAPIDefinition()
         {
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new EndpointOptions()
@@ -271,7 +271,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
 
             //Assert
             resultDoc.Should().NotBeNull();
@@ -283,7 +283,7 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenDocumentInParentFolder_WhenGetOpenApiDocument_ThenReturnTheAPIDefinition()
+        public async Task GivenDocumentInParentFolder_WhenGetOpenApiDocumentAsync_ThenReturnTheAPIDefinition()
         {
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new EndpointOptions()
@@ -315,7 +315,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
 
             //Assert
             resultDoc.Should().NotBeNull();
@@ -323,7 +323,7 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenNullDocument_WhenGetSwaggerJson_ThenReturnNull()
+        public async Task GivenNullDocument_WhenGetSwaggerJsonAsync_ThenReturnNull()
         {
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new EndpointOptions()
@@ -352,7 +352,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var swaggerJson = await sut.GetSwaggerJson("http://localhost:3030", ApiName);
+            var swaggerJson = await sut.GetSwaggerJsonAsync("http://localhost:3030", ApiName);
 
             //Assert
             swaggerJson.Should().BeNullOrWhiteSpace();
@@ -360,7 +360,7 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenValidDocument_WhenGetSwaggerJson_ThenReturnJson()
+        public async Task GivenValidDocument_WhenGetSwaggerJsonAsync_ThenReturnJson()
         {
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new EndpointOptions()
@@ -389,13 +389,13 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var swaggerJson = await sut.GetSwaggerJson("http://localhost:3030", ApiName);
+            var swaggerJson = await sut.GetSwaggerJsonAsync("http://localhost:3030", ApiName);
 
             //Assert
             swaggerJson.Should().NotBeNullOrWhiteSpace();
         }
 
-        private SwaggerService CreateSut()
+        private ISwaggerService CreateSut()
         {
             return new SwaggerService(_logger, _endpointOptions, _memoryCache, _fileSystem, _httpClientFactory);
         }
