@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using System.IO.Abstractions.Extensions;
-using System.Net.Mime;
-using System.Text.Unicode;
 
 using API.Options;
 using API.Services;
@@ -16,6 +13,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+
+using RichardSzalay.MockHttp;
 
 using Xunit;
 
@@ -27,6 +27,7 @@ namespace API.Tests.Services
         private readonly IOptions<EndpointOptions> _endpointOptions;
         private readonly IMemoryCache _memoryCache;
         private readonly IFileSystem _fileSystem;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         private const string ApiName = "testApi";
 
@@ -36,6 +37,7 @@ namespace API.Tests.Services
             _endpointOptions = Substitute.For<IOptions<EndpointOptions>>();
             _memoryCache = Substitute.For<IMemoryCache>();
             _fileSystem = Substitute.For<IFileSystem>();
+            _httpClientFactory = Substitute.For<IHttpClientFactory>();
         }
 
         [Fact]
@@ -104,6 +106,102 @@ namespace API.Tests.Services
             //Assert
             resultDoc.Should().BeNull();
             _logger.ReceivedOnce(LogLevel.Error, "Could not find the directory");
+        }
+
+        [Fact]
+        public async Task GivenFileDoesNotExists_WhenGetOpenApiDocument_ThenReturnNull()
+        {
+            //Arrange
+            var apiDefDirectoryName = "apiDefs";
+            _endpointOptions.Value.Returns(new EndpointOptions()
+            {
+                RootFolderName = apiDefDirectoryName,
+                Apis = new List<EndpointOptionsApi>()
+                {
+                    new() { ApiName = ApiName, SwaggerLocation = $"{ApiName}\\swagger.json"  }
+                }
+            });
+
+
+            var apiDefDirectory = Substitute.For<IDirectoryInfo>();
+            apiDefDirectory.Name.Returns(apiDefDirectoryName);
+            apiDefDirectory.FullName.Returns($"z:\\\\{apiDefDirectoryName}");
+
+            var appDir = Substitute.For<IDirectoryInfo>();
+            appDir.GetDirectories().Returns(new[] { apiDefDirectory });
+
+            _fileSystem.DirectoryInfo.New(Arg.Any<string>()).Returns(appDir);
+            _fileSystem.File.Exists($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json").Returns(false);
+
+            //Act
+            var sut = CreateSut();
+            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+
+            //Assert
+            resultDoc.Should().BeNull();
+            _logger.ReceivedOnce(LogLevel.Error, "Could not find the swagger file in path");
+        }
+
+        [Fact]
+        public async Task GivenUnknownErrorOpeningTheFile_WhenGetOpenApiDocument_ThenReturnNull()
+        {
+            //Arrange
+            var apiDefDirectoryName = "apiDefs";
+            _endpointOptions.Value.Returns(new EndpointOptions()
+            {
+                RootFolderName = apiDefDirectoryName,
+                Apis = new List<EndpointOptionsApi>()
+                {
+                    new() { ApiName = ApiName, SwaggerLocation = $"{ApiName}\\swagger.json"  }
+                }
+            });
+
+
+            var apiDefDirectory = Substitute.For<IDirectoryInfo>();
+            apiDefDirectory.Name.Returns(apiDefDirectoryName);
+            apiDefDirectory.FullName.Returns($"z:\\\\{apiDefDirectoryName}");
+
+            var appDir = Substitute.For<IDirectoryInfo>();
+            appDir.GetDirectories().Returns(new[] { apiDefDirectory });
+
+            _fileSystem.DirectoryInfo.New(Arg.Any<string>()).Returns(appDir);
+            _fileSystem.File.Exists($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json").Throws(new Exception("whatever"));
+
+            //Act
+            var sut = CreateSut();
+            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+
+            //Assert
+            resultDoc.Should().BeNull();
+            _logger.ReceivedOnce(LogLevel.Error, "Unknown error trying to open the swagger file");
+        }
+
+        [Fact]
+        public async Task GivenUnableToGetFileFromWeb_WhenGetOpenApiDocument_ThenReturnNull()
+        {
+            //Arrange
+            var swggerUrl = "http://localhost/swagger";
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(swggerUrl).Throw(new Exception());
+            var client = mockHttp.ToHttpClient();
+            _httpClientFactory.CreateClient().Returns(client);
+
+            _endpointOptions.Value.Returns(new EndpointOptions()
+            {
+                RootFolderName = "test",
+                Apis = new List<EndpointOptionsApi>()
+                {
+                    new() { ApiName = ApiName, SwaggerLocation = swggerUrl }
+                }
+            });
+
+            //Act
+            var sut = CreateSut();
+            var resultDoc = await sut.GetOpenApiDocument("http://localhost:3030", ApiName);
+
+            //Assert
+            resultDoc.Should().BeNull();
+            _logger.ReceivedOnce(LogLevel.Error, "Error trying to get the swagger file from");
         }
 
         [Fact]
@@ -299,7 +397,7 @@ namespace API.Tests.Services
 
         private SwaggerService CreateSut()
         {
-            return new SwaggerService(_logger, _endpointOptions, _memoryCache, _fileSystem);
+            return new SwaggerService(_logger, _endpointOptions, _memoryCache, _fileSystem, _httpClientFactory);
         }
     }
 }

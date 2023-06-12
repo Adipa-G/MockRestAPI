@@ -14,6 +14,7 @@ builder.Services
     .Configure<EndpointOptions>(options => configurationRoot.GetSection("Endpoints").Bind(options))
     .AddSingleton<IMemoryCache, MemoryCache>()
     .AddSingleton<IFileSystem, FileSystem>()
+    .AddHttpClient()
     .AddScoped<GlobalPathsHandlerService>()
     .AddScoped<SwaggerService>();
 

@@ -17,16 +17,19 @@ namespace API.Services
         private readonly EndpointOptions _endpointOptions;
         private readonly IMemoryCache _memoryCache;
         private readonly IFileSystem _fileSystem;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public SwaggerService(ILogger<SwaggerService> logger,
             IOptions<EndpointOptions> endpointOptions,
             IMemoryCache memoryCache,
-            IFileSystem fileSystem)
+            IFileSystem fileSystem,
+            IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
             _endpointOptions = endpointOptions.Value;
             _memoryCache = memoryCache;
             _fileSystem = fileSystem;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<string> GetSwaggerJson(string baseUrl, string apiName)
@@ -63,39 +66,75 @@ namespace API.Services
                 return null;
             }
 
-            var dir = GetBaseDirectory();
-            if (dir == null)
+            await using var stream = apiDef.SwaggerLocation.StartsWith("http")
+                ? await OpenOpenApiDefinitionFromHttp(apiName, apiDef)
+                : await OpenOpenApiDefinitionFromFile(apiName, apiDef);
+            if (stream != null)
             {
-                _logger.LogError("Could not find the directory {baseDirectory} in either the application directory or any of the parent directories", _endpointOptions.RootFolderName);
-                return null;
-            }
-
-            var swaggerPath = Path.Combine(dir.FullName, apiDef.SwaggerLocation);
-            if (_fileSystem.File.Exists(swaggerPath))
-            {
-                await using var fileStream = _fileSystem.File.Open(swaggerPath, FileMode.Open);
                 OpenApiDiagnostic? diagnostic = null;
                 try
                 {
-                    doc = new OpenApiStreamReader().Read(fileStream, out diagnostic);
-                    doc.Servers = new List<OpenApiServer>()
-                    {
-                        new()
-                        {
-                            Url = $"{baseUrl}/{apiName}"
-                        }
-                    };
+                    doc = new OpenApiStreamReader().Read(stream, out diagnostic);
+                    doc.Servers = new List<OpenApiServer>() { new() { Url = $"{baseUrl}/{apiName}" } };
                     _memoryCache.Set(cacheKey, doc, TimeSpan.FromSeconds(60));
                 }
                 catch (Exception e)
                 {
                     var diagnosticJson = JsonConvert.SerializeObject(diagnostic);
-                    _logger.LogError(e,"Could not parse the open api spec. Diagnostic details : {diagnostic}", diagnosticJson);
+                    _logger.LogError(e, "Could not parse the open api spec. Diagnostic details : {diagnostic}",
+                        diagnosticJson);
                 }
-                return doc;
             }
-            _logger.LogError("Could not find the swagger file in path {swaggerPath} for the api {apiName}", swaggerPath, apiName);
-            return null;
+
+            return doc;
+        }
+
+        private async Task<Stream?> OpenOpenApiDefinitionFromHttp(string apiName, EndpointOptionsApi apiDef)
+        {
+            try
+            {
+                var httpClient = _httpClientFactory.CreateClient();
+                var stream = await httpClient.GetStreamAsync(apiDef.SwaggerLocation);
+                return stream;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error trying to get the swagger file from {url} for the api {apiName}", apiDef.SwaggerLocation, apiName);
+                return null;
+            }
+        }
+
+        private Task<Stream?> OpenOpenApiDefinitionFromFile(string apiName, EndpointOptionsApi apiDef)
+        {
+            try
+            {
+                var dir = GetBaseDirectory();
+                if (dir == null)
+                {
+                    _logger.LogError(
+                        "Could not find the directory {baseDirectory} in either the application directory or any of the parent directories",
+                        _endpointOptions.RootFolderName);
+                    return Task.FromResult((Stream?)null);
+                }
+
+                var swaggerPath = Path.Combine(dir.FullName, apiDef.SwaggerLocation);
+                if (_fileSystem.File.Exists(swaggerPath))
+                {
+                    var stream = _fileSystem.File.Open(swaggerPath, FileMode.Open);
+                    return Task.FromResult((Stream?)stream);
+                }
+                else
+                {
+                    _logger.LogError("Could not find the swagger file in path {swaggerPath} for the api {apiName}", swaggerPath,
+                        apiName);
+                    return Task.FromResult((Stream?)null);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e,"Unknown error trying to open the swagger file for the api {apiName}", apiName);
+                return Task.FromResult((Stream?)null);
+            }
         }
 
         private IDirectoryInfo? GetBaseDirectory()
