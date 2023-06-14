@@ -19,13 +19,13 @@ namespace API.Services
             _swaggerService = swaggerService;
         }
 
-        public async Task<string?> GetResponse(string baseUrl,string apiName, string requestPath, HttpRequest request)
+        public async Task<KeyValuePair<string,string?>> GetResponse(string baseUrl,string apiName, string requestPath, HttpRequest request)
         {
             var openApiSpec = await _swaggerService.GetOpenApiDocumentAsync(baseUrl, apiName);
             if (openApiSpec == null)
             {
                 _logger.LogError("Null open api spec for API : [{apiName}]. Unable to process.", apiName);
-                return null;
+                return default;
             }
                 
 
@@ -35,7 +35,7 @@ namespace API.Services
             if (path.Equals(default(KeyValuePair<string, OpenApiPathItem>)))
             {
                 _logger.LogError("Unable to find matching path for API : [{apiName}] for Path : [{path}]. Unable to process.", apiName, requestPath);
-                return null;
+                return default;
             }
                 
 
@@ -45,7 +45,7 @@ namespace API.Services
             if (operation.Equals(default(KeyValuePair<OperationType, OpenApiOperation>)))
             {
                 _logger.LogError("Unable to find matching method for API : [{apiName}] for Method : [{method}]. Unable to process.", apiName, request.Method);
-                return null;
+                return default;
             }
                 
 
@@ -55,23 +55,44 @@ namespace API.Services
             if (response.Equals(default(KeyValuePair<string, OpenApiResponse>)))
             {
                 _logger.LogError("No responses are defined for the API : [{apiName}] for Path : [{path}]. Unable to process.", apiName, requestPath);
-                return null;
+                return default;
             }
-                
-
+               
             var content = response.Value.Content.FirstOrDefault(c => c.Key == request.ContentType);
             if (content.Equals(default(KeyValuePair<string,OpenApiMediaType>)))
                 content = response.Value.Content.FirstOrDefault();
             if (content.Equals(default(KeyValuePair<string, OpenApiMediaType>)))
             {
                 _logger.LogError("No contents are defined for the API : [{apiName}] for Path : [{path}]. Unable to process.", apiName, requestPath);
-                return null;
+                return default;
             }
-                
-            var schema = content.Value.Schema;
-            var example = GenerateFromSchema(schema);
 
-            return JsonConvert.SerializeObject(example);
+            var responseCode = response.Key;
+            var example = GenerateExample(content.Value, requestPath);
+            var exampleJson = JsonConvert.SerializeObject(example);
+            return new KeyValuePair<string, string?>(responseCode, exampleJson);
+        }
+
+        private dynamic? GenerateExample(OpenApiMediaType mediaType, string requestPath)
+        {
+            IOpenApiAny? example = null;
+            var matchedExamplePath = false;
+            var examples = mediaType.Examples;
+            if (examples.Any())
+            {
+                var match = examples.Keys.FirstOrDefault(requestPath.Contains);
+                matchedExamplePath = !string.IsNullOrWhiteSpace(match);
+                example = matchedExamplePath ? examples[match!].Value : examples.Values.First().Value;
+            }
+            example = !matchedExamplePath && mediaType.Example != null ? mediaType.Example : example;
+
+            if (example != null)
+            {
+                return GenerateForType(example);
+            }
+
+            var schema = mediaType.Schema;
+            return GenerateFromSchema(schema);
         }
 
         private string FindMatchingPath(IList<string> apiPaths, string requestPath)
@@ -98,15 +119,17 @@ namespace API.Services
             return string.Empty;
         }
         
-        private dynamic GenerateFromSchema(OpenApiSchema schema)
+        private dynamic? GenerateFromSchema(OpenApiSchema? schema)
         {
-            var result = new ExpandoObject() as IDictionary<string, Object>; ;
+            if (schema == null || schema.Properties == null)
+                return null;
+
+            var result = new ExpandoObject() as IDictionary<string, object>;
             var props = schema.Properties;
             foreach (var prop in props)
             {
-                object? value = null;
                 var propSchema = prop.Value;
-                value = propSchema.Properties.Count > 0
+                object? value = propSchema.Properties.Count > 0
                     ? GenerateFromSchema(propSchema)
                     : GenerateForType(propSchema.Example);
 

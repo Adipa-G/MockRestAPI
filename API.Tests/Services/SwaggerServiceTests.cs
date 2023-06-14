@@ -105,7 +105,7 @@ namespace API.Tests.Services
 
             //Assert
             resultDoc.Should().BeNull();
-            _logger.ReceivedOnce(LogLevel.Error, "Could not find the directory");
+            _logger.ReceivedOnce(LogLevel.Error, "Could not find the Directory");
         }
 
         [Fact]
@@ -139,7 +139,7 @@ namespace API.Tests.Services
 
             //Assert
             resultDoc.Should().BeNull();
-            _logger.ReceivedOnce(LogLevel.Error, "Could not find the swagger file in path");
+            _logger.ReceivedOnce(LogLevel.Error, "Could not find the swagger file in Path");
         }
 
         [Fact]
