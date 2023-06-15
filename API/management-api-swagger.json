@@ -1,0 +1,150 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Test Swagger",
+    "version": "1.0.11"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:4030/api/v3"
+    }
+  ],
+  "paths": {
+    "/mock-call": {
+      "post": {
+        "summary": "Register a mock API call",
+        "description": "This API allows registering a mock response for a given API call.\n\n* The API does not need to be defined in the Swagger specifications.\n* Any random API can be registered using this method.\n* When the request path matches one of the matchers in the registration request, the registered response is sent back.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MockCallRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockCallResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MockCallRequest": {
+        "type": "object",
+        "required": [
+          "apiName",
+          "apiPath",
+          "method"
+        ],
+        "properties": {
+          "apiName": {
+            "type": "string",
+            "example": "petstore",
+            "description": "The API name to register the call against. This can be a known API name or any random API name.\n"
+          },
+          "apiPath": {
+            "type": "string",
+            "example": "/pet/{petId}",
+            "description": "The API path to register the call against."
+          },
+          "method": {
+            "type": "string",
+            "example": "get",
+            "description": "The method to register the call against."
+          },
+          "queryParamsToMatch": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KeyValuePair"
+            },
+            "example": [
+              {
+                "key": "status",
+                "value": "available"
+              },
+              {
+                "key": "status",
+                "value": "pending"
+              }
+            ],
+            "description": "The query parameters to match. If different values are passed for the same parameter, any value match is sufficient. For different parameters, all values need to match.\n"
+          },
+          "headersToMatch": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KeyValuePair"
+            },
+            "example": [
+              {
+                "key": "Authorization",
+                "value": "Bearer123"
+              }
+            ],
+            "description": "The headers to match. If different values are passed for the same header name, any value match is sufficient. For different headers, all values need to match.\n"
+          },
+          "bodyPathsToMatch": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KeyValuePair"
+            },
+            "example": [
+              {
+                "key": "pet.name",
+                "value": "scooby doo"
+              }
+            ],
+            "description": "The body paths to match. If different values are passed for the same path, any value match is sufficient. For different paths, all values need to match. \n"
+          },
+          "timeToLive": {
+            "type": "number",
+            "example": 60,
+            "description": "The number of seconds for this response to be valid. Once the TTL expires, this mock call is removed.\n"
+          },
+          "response": {
+            "type": "object",
+            "example": "{\n  \"summary\": \"Toto dog\",\n  \"value\": {\n    \"id\": 41,\n    \"name\": \"Toto\",\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Dogs\"\n    },\n    \"status\": \"available\"\n  }\n}\n",
+            "description": "The return payload. This can be any JSON object. \n"
+          }
+        }
+      },
+      "KeyValuePair": {
+        "type": "object",
+        "required": [
+          "key",
+          "value"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "example": "status"
+          },
+          "value": {
+            "type": "string",
+            "example": "available"
+          }
+        }
+      },
+      "MockCallResponse": {
+        "type": "object",
+        "properties": {
+          "succeeded": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}

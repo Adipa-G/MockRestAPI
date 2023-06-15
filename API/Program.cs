@@ -1,5 +1,6 @@
 using System.IO.Abstractions;
 
+using API;
 using API.Options;
 using API.Services;
 
@@ -32,11 +33,17 @@ if (endpointOptions?.Value != null)
     {
         app.UseSwaggerUI(c =>
         {
-            c.SwaggerEndpoint($"{apiDef.ApiName}/swagger/v2/swagger.json", $"API {apiDef.ApiName}");
+            c.SwaggerEndpoint($"{apiDef.ApiName}/swagger/v2/swagger.json", $"{apiDef.ApiName} API");
             c.RoutePrefix = $"{apiDef.ApiName}/swagger";
         });
     }
 }
+
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint($"{Constants.ManagementApiName}/swagger/v2/swagger.json", $"{Constants.ManagementApiName} API");
+    c.RoutePrefix = $"{Constants.ManagementApiName}/swagger";
+});
 
 
 app.Run(async (context) =>
