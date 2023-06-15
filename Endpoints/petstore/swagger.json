@@ -307,10 +307,10 @@
                                 },
                                 "examples": {
                                     "38": {
-                                        "summary": "first dog",
+                                        "summary": "Scooby Doo dog",
                                         "value": {
                                             "id": 38,
-                                            "name": "scoobie doo",
+                                            "name": "Scooby Doo",
                                             "category": {
                                                 "id": 1,
                                                 "name": "Dogs"
@@ -324,7 +324,7 @@
                                 },
                                 "example": {
                                     "id": 40,
-                                    "name": "cc scoobie doo",
+                                    "name": "Snowy",
                                     "category": {
                                         "id": 1,
                                         "name": "Dogs"
@@ -1170,10 +1170,10 @@
         },
         "examples": {
             "dog-example": {
-                "summary": "second dog",
+                "summary": "Toto dog",
                 "value": {
                     "id": 41,
-                    "name": "abc scoobie doo",
+                    "name": "Toto",
                     "category": {
                         "id": 1,
                         "name": "Dogs"

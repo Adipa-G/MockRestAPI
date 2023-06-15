@@ -395,6 +395,22 @@ namespace API.Tests.Services
             swaggerJson.Should().NotBeNullOrWhiteSpace();
         }
 
+        [Fact]
+        public async Task GivenManagementSwagger_WhenGetSwaggerJsonAsync_ThenReturnJson()
+        {
+            _endpointOptions.Value.Returns(new EndpointOptions()
+            {
+                Apis = new List<EndpointOptionsApi>()
+            });
+
+            //Act
+            var sut = CreateSut();
+            var swaggerJson = await sut.GetSwaggerJsonAsync("http://localhost:3030", Constants.ManagementApiName);
+
+            //Assert
+            swaggerJson.Should().NotBeNullOrWhiteSpace();
+        }
+
         private ISwaggerService CreateSut()
         {
             return new SwaggerService(_logger, _endpointOptions, _memoryCache, _fileSystem, _httpClientFactory);

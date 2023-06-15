@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Reflection;
+
+using Newtonsoft.Json;
 
 namespace API.Services
 {
@@ -36,6 +38,13 @@ namespace API.Services
             {
                 var swaggerJson = await _swaggerService.GetSwaggerJsonAsync(baseUrl, apiName);
                 await WriteToResponseJsonAsync(context, "200", swaggerJson);
+            }
+            else if (apiName == Constants.ManagementApiName)
+            {
+                _logger.LogWarning("Unable to handle the path {path}", pathStr);
+                var noIdeaMessage =
+                    new KeyValuePair<string, string>("message", "I have never met this man in my life.");
+                await WriteToResponseJsonAsync(context, "400", JsonConvert.SerializeObject(noIdeaMessage));
             }
             else
             {

@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using System.Reflection;
 
 using API.Options;
 
@@ -60,16 +61,25 @@ namespace API.Services
             }
 
             var apiDef = _endpointOptions.Apis.FirstOrDefault(api => api.ApiName == apiName);
-            if (apiDef == null)
+            if (apiDef == null && apiName != Constants.ManagementApiName)
             {
                 _logger.LogError("Could not find the API definition for API : [{apiName}] in the appsettings.json file", apiName);
                 return null;
             }
 
-            await using var stream = apiDef.SwaggerLocation.StartsWith("http")
-                ? await OpenOpenApiDefinitionFromHttp(apiName, apiDef)
-                : await OpenOpenApiDefinitionFromFile(apiName, apiDef);
-            if (stream != null)
+            Stream? stream = Stream.Null;
+            if (apiName == Constants.ManagementApiName)
+            {
+                stream = OpenManagementApiDefinition();
+            }
+            else if (apiDef != null)
+            {
+                stream = apiDef.SwaggerLocation.StartsWith("http")
+                    ? await OpenOpenApiDefinitionFromHttp(apiName, apiDef)
+                    : await OpenOpenApiDefinitionFromFile(apiName, apiDef);
+            }
+            
+            if (stream != Stream.Null)
             {
                 OpenApiDiagnostic? diagnostic = null;
                 try
@@ -84,6 +94,7 @@ namespace API.Services
                     _logger.LogError(e, "Could not parse the open api spec. Diagnostic details : [{diagnostic}]",
                         diagnosticJson);
                 }
+                stream?.Close();
             }
 
             return doc;
@@ -135,6 +146,13 @@ namespace API.Services
                 _logger.LogError(e,"Unknown error trying to open the swagger file for the API : [{apiName}]", apiName);
                 return Task.FromResult((Stream?)null);
             }
+        }
+
+        private Stream? OpenManagementApiDefinition()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            string resourceName = "API.management-api-swagger.json";
+            return assembly.GetManifestResourceStream(resourceName);
         }
 
         private IDirectoryInfo? GetBaseDirectory()
