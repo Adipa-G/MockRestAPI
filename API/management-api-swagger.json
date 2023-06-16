@@ -112,6 +112,11 @@
             "example": 60,
             "description": "The number of seconds for this response to be valid. Once the TTL expires, this mock call is removed.\n"
           },
+          "responseCode": {
+            "type": "number",
+            "example": "200",
+            "description": "The return status code."
+          },
           "response": {
             "type": "object",
             "example": "{\n  \"summary\": \"Toto dog\",\n  \"value\": {\n    \"id\": 41,\n    \"name\": \"Toto\",\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Dogs\"\n    },\n    \"status\": \"available\"\n  }\n}\n",
