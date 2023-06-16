@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace API.Services
 {
@@ -8,18 +6,18 @@ namespace API.Services
     {
         private readonly ILogger<GlobalPathsHandlerService> _logger;
         private readonly ISwaggerService _swaggerService;
-        private readonly ISwaggerExampleResponseBuilderService _swaggerExampleResponseBuilderService;
+        private readonly IResponseGeneratorService _responseGeneratorService;
 
         public GlobalPathsHandlerService(ILogger<GlobalPathsHandlerService> logger,
             ISwaggerService swaggerService,
-            ISwaggerExampleResponseBuilderService swaggerExampleResponseBuilderService)
+            IResponseGeneratorService responseGeneratorService)
         {
             _logger = logger;
             _swaggerService = swaggerService;
-            _swaggerExampleResponseBuilderService = swaggerExampleResponseBuilderService;
+            _responseGeneratorService = responseGeneratorService;
         }
 
-        public async Task HandleAsync(HttpContext context)
+        public async Task<bool> HandleAsync(HttpContext context)
         {
             var baseUrl = $"{context.Request.Scheme}://{context.Request.Host.Value}";
             var path = context.Request.Path;
@@ -30,39 +28,27 @@ namespace API.Services
             }
             var tokens = pathStr.TrimStart('/').Split('/');
             var apiName = tokens[0];
-            var restOfThePath = pathStr.Replace($"{apiName}/", string.Empty);
-           
+            var restOfThePath = pathStr.Replace($"{apiName}/", string.Empty).TrimStart('/');
 
+            if (apiName == Constants.ManagementApiName && !restOfThePath.Contains("swagger/v2/swagger.json"))
+            {
+                return false;
+            }
+            
             _logger.LogInformation("Handling the path {path}", pathStr);
             if (restOfThePath.Contains("swagger/v2/swagger.json"))
             {
                 var swaggerJson = await _swaggerService.GetSwaggerJsonAsync(baseUrl, apiName);
                 await WriteToResponseJsonAsync(context, "200", swaggerJson);
             }
-            else if (apiName == Constants.ManagementApiName)
-            {
-                _logger.LogWarning("Unable to handle the path {path}", pathStr);
-                var noIdeaMessage =
-                    new KeyValuePair<string, string>("message", "I have never met this man in my life.");
-                await WriteToResponseJsonAsync(context, "400", JsonConvert.SerializeObject(noIdeaMessage));
-            }
             else
             {
                 var response =
-                    await _swaggerExampleResponseBuilderService.GetResponse(baseUrl, apiName, restOfThePath,
+                    await _responseGeneratorService.GenerateJsonResponseAsync(baseUrl, apiName, restOfThePath,
                         context.Request);
-                if (response.Equals(default(KeyValuePair<string, string>)))
-                {
-                    _logger.LogWarning("Unable to handle the path {path}", pathStr);
-                    var noIdeaMessage =
-                        new KeyValuePair<string, string>("message", "I have never met this man in my life.");
-                    await WriteToResponseJsonAsync(context, "400", JsonConvert.SerializeObject(noIdeaMessage));
-                }
-                else
-                {
-                    await WriteToResponseJsonAsync(context, response.Key, response.Value);
-                }
+                await WriteToResponseJsonAsync(context, response.Key, response.Value);
             }
+            return true;
         }
 
         private async Task WriteToResponseJsonAsync(HttpContext context, string responseCodeStr, string? responseJson)

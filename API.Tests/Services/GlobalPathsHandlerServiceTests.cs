@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text;
+﻿using System.Text;
 
 using API.Services;
 using API.Tests.Helpers;
@@ -19,15 +18,15 @@ namespace API.Tests.Services
     {
         private readonly LoggerMock<GlobalPathsHandlerService> _logger;
         private readonly ISwaggerService _swaggerService;
-        private readonly ISwaggerExampleResponseBuilderService _exampleResponseBuilder;
+        private readonly IResponseGeneratorService _responseGeneratorService;
 
-        private MemoryStream _responseBody;
+        private readonly MemoryStream _responseBody;
 
         public GlobalPathsHandlerServiceTests()
         {
             _logger = Substitute.For<LoggerMock<GlobalPathsHandlerService>>();
             _swaggerService = Substitute.For<ISwaggerService>();
-            _exampleResponseBuilder = Substitute.For<ISwaggerExampleResponseBuilderService>();
+            _responseGeneratorService = Substitute.For<IResponseGeneratorService>();
 
             _responseBody = new MemoryStream();
         }
@@ -36,63 +35,53 @@ namespace API.Tests.Services
         public async Task GivenMockAPISwaggerRequest_WhenHandleAsync_ThenReturnSwaggerContent()
         {
             //Arrange
+            string baseUrl = "http://localhost";
+            string method = "get";
+            string apiName = "mockApi";
             string swaggerJson = "{ \"id\" = \"test\" }";
 
-            var context = CreateContext("get", "/mockApi/swagger/v2/swagger.json");
+            var context = CreateContext(method, $"/{apiName}/swagger/v2/swagger.json");
             _swaggerService.GetSwaggerJsonAsync(Arg.Any<string>(), Arg.Any<string>())
                 .Returns(swaggerJson);
 
             //Act
             var sut = CreateSut();
-            await sut.HandleAsync(context);
+            var result = await sut.HandleAsync(context);
 
             //Assert
+            result.Should().BeTrue();
             _logger.ReceivedOnce(LogLevel.Information, "Handling the path");
-            await _swaggerService.Received(1).GetSwaggerJsonAsync("http://localhost", "mockApi");
+            await _swaggerService.Received(1).GetSwaggerJsonAsync(baseUrl, apiName);
             GetResponseBody().Should().Be(swaggerJson);
             context.Response.StatusCode.Should().Be(200);
         }
 
         [Fact]
-        public async Task GivenMockAPIRequestAndReturnsValidResponse_WhenHandleAsync_ThenReturnResponse()
+        public async Task GivenMockAPIRequestAndReturnsValidResponse_WhenHandleAsync_ThenCallResponseGenerator()
         {
             //Arrange
+            string baseUrl = "http://localhost";
+            string method = "get";
+            string apiName = "mockApi";
+            string requestPath = "pet/21";
             string responsePayload = "{ \"id\" = \"test\" }";
 
-            var context = CreateContext("get", "/mockApi/pet/21");
-            _exampleResponseBuilder.GetResponse(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<HttpRequest>())
+            var context = CreateContext(method, $"/{apiName}/{requestPath}");
+            _responseGeneratorService.GenerateJsonResponseAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<HttpRequest>())
                 .Returns(new KeyValuePair<string, string?>("200", responsePayload));
 
             //Act
             var sut = CreateSut();
-            await sut.HandleAsync(context);
+            var result = await sut.HandleAsync(context);
 
             //Assert
+            result.Should().BeTrue();
             _logger.ReceivedOnce(LogLevel.Information, "Handling the path");
-            await _exampleResponseBuilder.Received(1).GetResponse("http://localhost", "mockApi", "/pet/21", context.Request);
+            await _responseGeneratorService.Received(1).GenerateJsonResponseAsync(baseUrl, apiName, requestPath, context.Request);
             GetResponseBody().Should().Be(responsePayload);
             context.Response.StatusCode.Should().Be(200);
         }
-
-        [Fact]
-        public async Task GivenMockAPIRequestAndReturnsEmptyResponse_WhenHandleAsync_ThenReturnResponse()
-        {
-            //Arrange
-            var context = CreateContext("get", "/mockApi/pet/21");
-            _exampleResponseBuilder.GetResponse(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<HttpRequest>()).Returns(default(KeyValuePair<string, string?>));
-
-            //Act
-            var sut = CreateSut();
-            await sut.HandleAsync(context);
-
-            //Assert
-            _logger.ReceivedOnce(LogLevel.Information, "Handling the path");
-            await _exampleResponseBuilder.Received(1).GetResponse("http://localhost", "mockApi", "/pet/21", context.Request);
-            GetResponseBody().Should().Contain("I have never met this man in my life.");
-            context.Response.StatusCode.Should().Be(400);
-        }
-
+        
         private string GetResponseBody()
         {
             return Encoding.UTF8.GetString(_responseBody.ToArray());
@@ -116,7 +105,7 @@ namespace API.Tests.Services
 
         private GlobalPathsHandlerService CreateSut()
         {
-            return new GlobalPathsHandlerService(_logger, _swaggerService, _exampleResponseBuilder);
+            return new GlobalPathsHandlerService(_logger, _swaggerService, _responseGeneratorService);
         }
     }
 }

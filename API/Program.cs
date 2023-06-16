@@ -18,12 +18,17 @@ builder.Services
     .AddHttpClient()
     .AddScoped<IGlobalPathsHandlerService, GlobalPathsHandlerService>()
     .AddScoped<ISwaggerService,SwaggerService>()
-    .AddScoped<ISwaggerExampleResponseBuilderService, SwaggerExampleResponseBuilderService>();
+    .AddScoped<ISwaggerExampleResponseBuilderService, SwaggerExampleResponseBuilderService>()
+    .AddScoped<IResponseGeneratorService, ResponseGeneratorService>()
+    .AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
+app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 var endpointOptions = app.Services.GetService<IOptions<EndpointOptions>>();
 if (endpointOptions?.Value != null)
@@ -38,22 +43,27 @@ if (endpointOptions?.Value != null)
         });
     }
 }
-
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint($"{Constants.ManagementApiName}/swagger/v2/swagger.json", $"{Constants.ManagementApiName} API");
     c.RoutePrefix = $"{Constants.ManagementApiName}/swagger";
 });
 
-
-app.Run(async (context) =>
+app.Use(async (context, next) =>
 {
     var handlerService = context.RequestServices.GetService<IGlobalPathsHandlerService>();
     if (handlerService != null)
     {
-        await handlerService.HandleAsync(context);
+        var handled = await handlerService.HandleAsync(context);
+        if (handled)
+        {
+            await context.Response.CompleteAsync();
+        }
+        else
+        {
+            await next(context);
+        }
     }
-    await context.Response.CompleteAsync();
 });
 
 app.Run();

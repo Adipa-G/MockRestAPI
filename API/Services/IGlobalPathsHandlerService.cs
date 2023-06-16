@@ -2,5 +2,5 @@
 
 public interface IGlobalPathsHandlerService
 {
-    Task HandleAsync(HttpContext context);
+    Task<bool> HandleAsync(HttpContext context);
 }
