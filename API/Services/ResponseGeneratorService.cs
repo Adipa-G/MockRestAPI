@@ -50,29 +50,50 @@ namespace API.Services
             if (apiCalls == null)
                 return null;
 
+            var requstJson = string.Empty;
+            if (request.Body.Length > 0)
+            {
+                requstJson = await (new StreamReader(request.Body)).ReadToEndAsync();
+            }
+
+            var highScore = 0;
+            MockApiCall? highScoreApiCal = null;
             foreach (MockApiCall apiCall in apiCalls)
             {
                 if (apiCall.Expiry < DateTimeOffset.Now)
                     continue;
 
-                var match = CheckForQueryParameterMatch(request, apiCall);
-                match = match && CheckForHeaderMatch(request, apiCall);
-                match = match && await CheckBodyPathMatch(request, apiCall);
-                if (match)
+                var isMatch = true;
+                var score = 0;
+
+                var qMatch = CheckForQueryParameterMatch(request, apiCall);
+                isMatch &= qMatch.Key;
+                score += qMatch.Value;
+                
+                var hMatch = CheckForHeaderMatch(request, apiCall);
+                isMatch &= hMatch.Key;
+                score += hMatch.Value;
+
+                var bMatch = CheckBodyPathMatch(requstJson, apiCall);
+                isMatch &= bMatch.Key;
+                score += bMatch.Value;
+
+                if (isMatch && score > 0 && score > highScore)
                 {
-                    return apiCall;
+                    highScore = score;
+                    highScoreApiCal = apiCall;
                 }
             }
-            return null;
+            return highScoreApiCal;
         }
 
-        private bool CheckForQueryParameterMatch(HttpRequest request, MockApiCall apiCall)
+        private KeyValuePair<bool, int> CheckForQueryParameterMatch(HttpRequest request, MockApiCall apiCall)
         {
             if (apiCall.QueryParamsToMatch == null)
-                return true;
+                return new KeyValuePair<bool, int>(true, 1);
 
             if (request.Query.Count == 0)
-                return false;
+                return new KeyValuePair<bool, int>(false, 0);
 
             var matchQueryGroupList = apiCall.QueryParamsToMatch.GroupBy(q => q.Key).Select(g =>
                 new KeyValuePair<string, List<string>>(g.Key, g.Select(gv => gv.Value).ToList())).ToList();
@@ -83,13 +104,13 @@ namespace API.Services
             return MatchGroupList(matchQueryGroupList, queryGroupList);
         }
 
-        private bool CheckForHeaderMatch(HttpRequest request, MockApiCall apiCall)
+        private KeyValuePair<bool,int> CheckForHeaderMatch(HttpRequest request, MockApiCall apiCall)
         {
             if (apiCall.HeadersToMatch == null )
-                return true;
+                return new KeyValuePair<bool, int>(true, 1);
 
             if (request.Headers.Count == 0)
-                return false;
+                return new KeyValuePair<bool, int>(false, 0);
 
             var matchQueryGroupList = apiCall.HeadersToMatch.GroupBy(q => q.Key).Select(g =>
                 new KeyValuePair<string, List<string>>(g.Key, g.Select(gv => gv.Value).ToList())).ToList();
@@ -100,37 +121,41 @@ namespace API.Services
             return MatchGroupList(matchQueryGroupList, headerGroupList);
         }
 
-        private async Task<bool> CheckBodyPathMatch(HttpRequest request, MockApiCall apiCall)
+        private KeyValuePair<bool,int> CheckBodyPathMatch(string requestJson, MockApiCall apiCall)
         {
             if (apiCall.BodyPathsToMatch == null)
-                return true;
+                return new KeyValuePair<bool, int>(true, 1);
 
-            if (!request.HasJsonContentType() && request.ContentLength.GetValueOrDefault() == 0)
-                return false;
+            if (string.IsNullOrWhiteSpace(requestJson))
+                return new KeyValuePair<bool, int>(false, 0);
 
-            var requestObject = await request.ReadFromJsonAsync<JObject>();
+            var jObject = JObject.Parse(requestJson);
 
-            bool isMatch = true;
+            var isMatch = true;
+            var score = 0;
             foreach (var bodyPath in apiCall.BodyPathsToMatch)
             {
-                var pathValue = requestObject?.SelectToken(bodyPath.Key);
+                var pathValue = jObject.SelectToken(bodyPath.Key);
                 isMatch = isMatch && pathValue?.Value<string>() == bodyPath.Value;
+                if (isMatch)
+                    score += 10;
             }
-            return isMatch;
+            return new KeyValuePair<bool, int>(isMatch, isMatch ? score : 0);
         }
 
-        private bool MatchGroupList(List<KeyValuePair<string, List<string>>> matchGroupList, List<KeyValuePair<string, List<string?>>> queryGroupList)
+        private KeyValuePair<bool,int> MatchGroupList(List<KeyValuePair<string, List<string>>> matchGroupList, List<KeyValuePair<string, List<string?>>> queryGroupList)
         {
             var isMatch = true;
+            var score = 0;
             foreach (var matchGroup in matchGroupList)
             {
                 isMatch = isMatch && queryGroupList.Any(q =>
                     q.Key == matchGroup.Key && q.Value.Any(v => v != null && matchGroup.Value.Contains(v)));
-                if (!isMatch)
-                    return false;
+                if (isMatch)
+                    score += 10;
             }
 
-            return isMatch;
+            return  new KeyValuePair<bool, int>(isMatch, isMatch ? score : 0);
         }
     }
 }
