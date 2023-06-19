@@ -24,7 +24,7 @@ namespace API.Tests.Services
     public class SwaggerServiceTests
     {
         private readonly LoggerMock<SwaggerService> _logger;
-        private readonly IOptions<EndpointOptions> _endpointOptions;
+        private readonly IOptions<ConfigOptions> _endpointOptions;
         private readonly IMemoryCache _memoryCache;
         private readonly IFileSystem _fileSystem;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -34,7 +34,7 @@ namespace API.Tests.Services
         public SwaggerServiceTests()
         {
             _logger = new LoggerMock<SwaggerService>();
-            _endpointOptions = Substitute.For<IOptions<EndpointOptions>>();
+            _endpointOptions = Substitute.For<IOptions<ConfigOptions>>();
             _memoryCache = Substitute.For<IMemoryCache>();
             _fileSystem = Substitute.For<IFileSystem>();
             _httpClientFactory = Substitute.For<IHttpClientFactory>();
@@ -64,7 +64,7 @@ namespace API.Tests.Services
         public async Task GivenNoApiDef_WhenGetOpenApiDocumentAsync_ThenReturnNull()
         {
             //Arrange
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 Apis = new List<EndpointOptionsApi>()
                 {
@@ -86,7 +86,7 @@ namespace API.Tests.Services
         {
             //Arrange
             var apiDefDirectoryName = "apiDefs";
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
@@ -113,7 +113,7 @@ namespace API.Tests.Services
         {
             //Arrange
             var apiDefDirectoryName = "apiDefs";
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
@@ -147,7 +147,7 @@ namespace API.Tests.Services
         {
             //Arrange
             var apiDefDirectoryName = "apiDefs";
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
@@ -186,7 +186,7 @@ namespace API.Tests.Services
             var client = mockHttp.ToHttpClient();
             _httpClientFactory.CreateClient().Returns(client);
 
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 RootFolderName = "test",
                 Apis = new List<EndpointOptionsApi>()
@@ -208,7 +208,7 @@ namespace API.Tests.Services
         public async Task GivenUnableToParseDocument_WhenGetOpenApiDocumentAsync_ThenReturnNull()
         {
             var apiDefDirectoryName = "apiDefs";
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
@@ -245,7 +245,7 @@ namespace API.Tests.Services
         public async Task GivenValidDocument_WhenGetOpenApiDocumentAsync_ThenReturnTheAPIDefinition()
         {
             var apiDefDirectoryName = "apiDefs";
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
@@ -286,7 +286,7 @@ namespace API.Tests.Services
         public async Task GivenDocumentInParentFolder_WhenGetOpenApiDocumentAsync_ThenReturnTheAPIDefinition()
         {
             var apiDefDirectoryName = "apiDefs";
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
@@ -326,7 +326,7 @@ namespace API.Tests.Services
         public async Task GivenNullDocument_WhenGetSwaggerJsonAsync_ThenReturnNull()
         {
             var apiDefDirectoryName = "apiDefs";
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
@@ -363,7 +363,7 @@ namespace API.Tests.Services
         public async Task GivenValidDocument_WhenGetSwaggerJsonAsync_ThenReturnJson()
         {
             var apiDefDirectoryName = "apiDefs";
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
@@ -398,7 +398,7 @@ namespace API.Tests.Services
         [Fact]
         public async Task GivenManagementSwagger_WhenGetSwaggerJsonAsync_ThenReturnJson()
         {
-            _endpointOptions.Value.Returns(new EndpointOptions()
+            _endpointOptions.Value.Returns(new ConfigOptions()
             {
                 Apis = new List<EndpointOptionsApi>()
             });

@@ -2,7 +2,6 @@
 
 using Microsoft.Extensions.Caching.Memory;
 
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace API.Services
@@ -30,7 +29,7 @@ namespace API.Services
 
             if (match != null)
             {
-                return new KeyValuePair<string, string?>(match.ResponseCode.ToString(), JsonConvert.SerializeObject(match.Response));
+                return new KeyValuePair<string, string?>(match.ResponseCode.ToString(), match.Response);
             }
             
             var response =
@@ -50,14 +49,33 @@ namespace API.Services
             if (apiCalls == null)
                 return null;
 
-            var requstJson = string.Empty;
-            if (request.Body.Length > 0)
+            string requstJson;
+            using (StreamReader stream = new(request.Body))
             {
-                requstJson = await (new StreamReader(request.Body)).ReadToEndAsync();
+                requstJson = await stream.ReadToEndAsync();
             }
 
+            var highScoreCalls = FindMatchingCalls(apiCalls, request, requstJson);
+
+            foreach (MockApiCall apiCall in highScoreCalls)
+            {
+                if (apiCall.ReturnOnlyForNthMatch.GetValueOrDefault() > 0)
+                {
+                    apiCall.MatchCount++;
+                }
+
+                if (apiCall.ReturnOnlyForNthMatch.GetValueOrDefault() == apiCall.MatchCount)
+                {
+                    return apiCall;
+                }
+            }
+            return highScoreCalls.FirstOrDefault(c => c.ReturnOnlyForNthMatch.GetValueOrDefault() == 0);
+        }
+
+        private IList<MockApiCall> FindMatchingCalls(List<MockApiCall> apiCalls, HttpRequest request, string requestJson)
+        {
             var highScore = 0;
-            MockApiCall? highScoreApiCal = null;
+            IList<MockApiCall> highScoreCalls = new List<MockApiCall>();
             foreach (MockApiCall apiCall in apiCalls)
             {
                 if (apiCall.Expiry < DateTimeOffset.Now)
@@ -69,27 +87,36 @@ namespace API.Services
                 var qMatch = CheckForQueryParameterMatch(request, apiCall);
                 isMatch &= qMatch.Key;
                 score += qMatch.Value;
-                
+
                 var hMatch = CheckForHeaderMatch(request, apiCall);
                 isMatch &= hMatch.Key;
                 score += hMatch.Value;
 
-                var bMatch = CheckBodyPathMatch(requstJson, apiCall);
+                var bMatch = CheckBodyPathMatch(requestJson, apiCall);
                 isMatch &= bMatch.Key;
                 score += bMatch.Value;
 
-                if (isMatch && score > 0 && score > highScore)
+                if (isMatch && score > 0)
                 {
-                    highScore = score;
-                    highScoreApiCal = apiCall;
+                    if (score > highScore)
+                    {
+                        highScoreCalls.Clear();
+                        highScoreCalls.Add(apiCall);
+                        highScore = score;
+                    }
+                    else if (score == highScore)
+                    {
+                        highScoreCalls.Add(apiCall);
+                    }
                 }
             }
-            return highScoreApiCal;
+
+            return highScoreCalls;
         }
 
         private KeyValuePair<bool, int> CheckForQueryParameterMatch(HttpRequest request, MockApiCall apiCall)
         {
-            if (apiCall.QueryParamsToMatch == null)
+            if (apiCall.QueryParamsToMatch == null || apiCall.QueryParamsToMatch.Count == 0)
                 return new KeyValuePair<bool, int>(true, 1);
 
             if (request.Query.Count == 0)
@@ -106,7 +133,7 @@ namespace API.Services
 
         private KeyValuePair<bool,int> CheckForHeaderMatch(HttpRequest request, MockApiCall apiCall)
         {
-            if (apiCall.HeadersToMatch == null )
+            if (apiCall.HeadersToMatch == null || apiCall.HeadersToMatch.Count == 0)
                 return new KeyValuePair<bool, int>(true, 1);
 
             if (request.Headers.Count == 0)
@@ -123,7 +150,7 @@ namespace API.Services
 
         private KeyValuePair<bool,int> CheckBodyPathMatch(string requestJson, MockApiCall apiCall)
         {
-            if (apiCall.BodyPathsToMatch == null)
+            if (apiCall.BodyPathsToMatch == null || apiCall.BodyPathsToMatch.Count == 0 )
                 return new KeyValuePair<bool, int>(true, 1);
 
             if (string.IsNullOrWhiteSpace(requestJson))

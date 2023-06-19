@@ -15,19 +15,19 @@ namespace API.Services
     public class SwaggerService : ISwaggerService
     {
         private readonly ILogger<SwaggerService> _logger;
-        private readonly EndpointOptions _endpointOptions;
+        private readonly ConfigOptions _configOptions;
         private readonly IMemoryCache _memoryCache;
         private readonly IFileSystem _fileSystem;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public SwaggerService(ILogger<SwaggerService> logger,
-            IOptions<EndpointOptions> endpointOptions,
+            IOptions<ConfigOptions> endpointOptions,
             IMemoryCache memoryCache,
             IFileSystem fileSystem,
             IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
-            _endpointOptions = endpointOptions.Value;
+            _configOptions = endpointOptions.Value;
             _memoryCache = memoryCache;
             _fileSystem = fileSystem;
             _httpClientFactory = httpClientFactory;
@@ -60,7 +60,7 @@ namespace API.Services
                 return doc;
             }
 
-            var apiDef = _endpointOptions.Apis.FirstOrDefault(api => api.ApiName == apiName);
+            var apiDef = _configOptions.Apis.FirstOrDefault(api => api.ApiName == apiName);
             if (apiDef == null && apiName != Constants.ManagementApiName)
             {
                 _logger.LogError("Could not find the API definition for API : [{apiName}] in the appsettings.json file", apiName);
@@ -124,7 +124,7 @@ namespace API.Services
                 {
                     _logger.LogError(
                         "Could not find the Directory : [{baseDirectory}] in either the application directory or any of the parent directories",
-                        _endpointOptions.RootFolderName);
+                        _configOptions.RootFolderName);
                     return Task.FromResult((Stream?)null);
                 }
 
@@ -160,9 +160,9 @@ namespace API.Services
             var dir = _fileSystem.DirectoryInfo.New(AppDomain.CurrentDomain.BaseDirectory);
             do
             {
-                if (dir.GetDirectories().Any(d => d.Name == _endpointOptions.RootFolderName))
+                if (dir.GetDirectories().Any(d => d.Name == _configOptions.RootFolderName))
                 {
-                    dir = dir.GetDirectories().FirstOrDefault(d => d.Name == _endpointOptions.RootFolderName);
+                    dir = dir.GetDirectories().FirstOrDefault(d => d.Name == _configOptions.RootFolderName);
                     break;
                 }
                 dir = dir.Parent;
