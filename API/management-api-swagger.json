@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Test Swagger",
+    "title": "Management endpoint Swagger",
     "version": "1.0.11"
   },
   "servers": [
@@ -13,7 +13,7 @@
     "/mock-call": {
       "post": {
         "summary": "Register a mock API call",
-        "description": "This API allows registering a mock response for a given API call.\n\n* The API does not need to be defined in the Swagger specifications.\n* Any random API can be registered using this method.\n* When the request path matches one of the matchers in the registration request, the registered response is sent back.\n",
+        "description": "This API allows registering a mock response for a given API call.\n\n* The API does not need to be defined in the Swagger specifications.\n* Any random API can be registered using this method.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -34,6 +34,31 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/mock-call/{callId}": {
+      "delete": {
+        "summary": "Delete a mock API call",
+        "description": "This API allows un-registering a mock response for a given API call.\n",
+        "parameters": [
+          {
+            "name": "callId",
+            "in": "path",
+            "description": "The call id to be removed",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "404": {
+            "description": "When the call id is not found"
           }
         }
       }
@@ -112,6 +137,11 @@
             "example": 60,
             "description": "The number of seconds for this response to be valid. Once the TTL expires, this mock call is removed.\n"
           },
+          "returnOnlyForNthMatch": {
+            "type": "number",
+            "example": 2,
+            "description": "This number indicate the number of matches before the response is sent. This is useful when the different response is required for subsequent calls. Once configured the response is only sent for this match for the Nth call only.\n"
+          },
           "responseCode": {
             "type": "number",
             "example": "200",
@@ -144,9 +174,9 @@
       "MockCallResponse": {
         "type": "object",
         "properties": {
-          "succeeded": {
-            "type": "boolean",
-            "example": true
+          "id": {
+            "type": "string",
+            "example": "b9700e80-87c5-436b-8209-2e4075e29bce"
           }
         }
       }

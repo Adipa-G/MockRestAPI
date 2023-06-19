@@ -45,11 +45,11 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall()
+            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             SetMemoryCache(cacheKey, mockApiCall);
 
@@ -77,11 +77,11 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall()
+            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddQueryParametersMatches(mockApiCall, "status", "available", "sold");
             SetMemoryCache(cacheKey, mockApiCall);
@@ -110,11 +110,11 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall()
+            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddQueryParametersMatches(mockApiCall, "status", "available", "sold");
             SetMemoryCache(cacheKey, mockApiCall);
@@ -144,7 +144,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCallOne = new MockApiCall()
+            var mockApiCallOne = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -152,11 +152,11 @@ namespace API.Tests.Services
             };
             AddQueryParametersMatches(mockApiCallOne, "status", "available", "sold");
 
-            var mockApiCallTwo = new MockApiCall()
+            var mockApiCallTwo = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddQueryParametersMatches(mockApiCallTwo, "status", "available", "sold");
             AddQueryParametersMatches(mockApiCallTwo, "type", "dog", "cat");
@@ -188,11 +188,11 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall()
+            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddQueryParametersMatches(mockApiCall, "status", "available", "sold");
             AddQueryParametersMatches(mockApiCall, "type", "dog", "cat");
@@ -223,11 +223,11 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall()
+            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddHeaderMatches(mockApiCall, "Authorization", "Bearer 123", "Bearer 234");
             SetMemoryCache(cacheKey, mockApiCall);
@@ -256,11 +256,11 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall()
+            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddHeaderMatches(mockApiCall, "Authorization", "Bearer 123", "Bearer 234");
             SetMemoryCache(cacheKey, mockApiCall);
@@ -290,7 +290,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCallOne = new MockApiCall()
+            var mockApiCallOne = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -299,11 +299,11 @@ namespace API.Tests.Services
             AddHeaderMatches(mockApiCallOne, "Authorization", "Bearer 123", "Bearer 234");
             SetMemoryCache(cacheKey, mockApiCallOne);
 
-            var mockApiCallTwo = new MockApiCall()
+            var mockApiCallTwo = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddHeaderMatches(mockApiCallTwo, "Authorization", "Bearer 123", "Bearer 234");
             AddHeaderMatches(mockApiCallTwo, "ClientId", "123", "234");
@@ -335,11 +335,11 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall()
+            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddHeaderMatches(mockApiCall, "Authorization", "Bearer 123", "Bearer 234");
             AddHeaderMatches(mockApiCall, "ClientId", "123", "234");
@@ -377,11 +377,11 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall()
+            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddBodyMatches(mockApiCall, "category.id", "1");
             SetMemoryCache(cacheKey, mockApiCall);
@@ -416,7 +416,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCallOne = new MockApiCall()
+            var mockApiCallOne = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -425,11 +425,11 @@ namespace API.Tests.Services
             AddBodyMatches(mockApiCallOne, "category.id", "1");
             SetMemoryCache(cacheKey, mockApiCallOne);
 
-            var mockApiCallTwo = new MockApiCall()
+            var mockApiCallTwo = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddBodyMatches(mockApiCallTwo, "category.id", "1");
             AddBodyMatches(mockApiCallTwo, "status", "sold");
@@ -449,21 +449,27 @@ namespace API.Tests.Services
         }
 
         [Fact]
-        public async Task GivenStoredMatchTwoBodyPaths_WhenGenerateJsonResponseAsyncWithOneMatchingHeader_ThenReturnNotFound()
+        public async Task GivenStoredMatchTwoBodyPaths_WhenGenerateJsonResponseAsyncWithOneMatchingBodyPath_ThenReturnNotFound()
         {
             //Arrange
-            string method = "get";
-            string requestPath = "findByStatus";
+            string method = "post";
+            string requestPath = "pet";
             var responseStatusCode = 200;
-            var response = new { id = "test" };
+            var response = new
+            {
+                id = 38,
+                name = "Scooby Doo",
+                category = new { id = 1, name = "Dogs" },
+                status = "available"
+            };
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall()
+            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = response
+                Response = JsonConvert.SerializeObject(response)
             };
             AddBodyMatches(mockApiCall, "category.id", "1");
             AddBodyMatches(mockApiCall, "status", "sold");
@@ -481,6 +487,47 @@ namespace API.Tests.Services
             await ExpectExampleResponseBuilderToReceiveCalls(true);
             result.Key.Should().Be("404");
             result.Value.Should().Be("I have never met this man in my life.");
+        }
+
+        [Fact]
+        public async Task GivenStoredMatchForNthRequest_WhenGenerateJsonResponseAsyncWithMatch_ThenReturnWhenNthCall()
+        {
+            //Arrange
+            string method = "get";
+            string requestPath = "findByStatus";
+            var responseStatusCode = 200;
+            var response = new { id = "test" };
+
+            var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
+
+            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            {
+                Expiry = DateTimeOffset.MaxValue,
+                ResponseCode = responseStatusCode,
+                ReturnOnlyForNthMatch = 2,
+                Response = JsonConvert.SerializeObject(response)
+            };
+            AddQueryParametersMatches(mockApiCall, "status", "sold");
+
+            SetMemoryCache(cacheKey, mockApiCall);
+
+            var context = CreateContext(method, $"/{ApiName}/{requestPath}");
+            AddQueryParameters(context, "status", "sold");
+
+            //Act
+            var sut = CreateSut();
+            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+
+            //Assert
+            result.Key.Should().Be("404");
+            result.Value.Should().Be("I have never met this man in my life.");
+
+            //Act
+            result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+
+            //Assert
+            result.Key.Should().Be("200");
+            result.Value.Should().Be(JsonConvert.SerializeObject(response));
         }
 
         [Fact]

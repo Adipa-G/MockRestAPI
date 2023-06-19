@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.IO.Abstractions;
 
 using API;
@@ -12,7 +13,7 @@ var configurationRoot = builder.Configuration.AddJsonFile("appsettings.json").Bu
 // Add services to the container.
 
 builder.Services
-    .Configure<EndpointOptions>(options => configurationRoot.GetSection("Endpoints").Bind(options))
+    .Configure<ConfigOptions>(options => configurationRoot.GetSection("Endpoints").Bind(options))
     .AddSingleton<IMemoryCache, MemoryCache>()
     .AddSingleton<IFileSystem, FileSystem>()
     .AddHttpClient()
@@ -30,7 +31,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-var endpointOptions = app.Services.GetService<IOptions<EndpointOptions>>();
+var endpointOptions = app.Services.GetService<IOptions<ConfigOptions>>();
 if (endpointOptions?.Value != null)
 {
     var apiDefs = endpointOptions.Value.Apis;
@@ -65,5 +66,9 @@ app.Use(async (context, next) =>
         }
     }
 });
+
+var memoryCache = app.Services.GetService<IMemoryCache>();
+var idMappings = new ConcurrentDictionary<string, string>();
+memoryCache?.Set(Constants.IdMappingCacheKey, idMappings);
 
 app.Run();

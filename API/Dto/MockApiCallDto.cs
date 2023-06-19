@@ -10,6 +10,7 @@
         public IList<KeyValuePair<string,string>>? BodyPathsToMatch { get; set; }
         public long? TimeToLive { get; set; }
         public int ResponseCode { get; set; }
-        public dynamic? Response { get; set; }
+        public int? ReturnOnlyForNthMatch { get; set; }
+        public object? Response { get; set; }
     }
 }
