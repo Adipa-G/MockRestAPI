@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Management endpoint Swagger",
+    "title": "Test Swagger",
     "version": "1.0.11"
   },
   "servers": [
@@ -10,7 +10,17 @@
     }
   ],
   "paths": {
-    "/mock-call": {
+    "/mock-call/{callId}": {
+      "parameters": [
+        {
+          "name": "callId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
       "post": {
         "summary": "Register a mock API call",
         "description": "This API allows registering a mock response for a given API call.\n\n* The API does not need to be defined in the Swagger specifications.\n* Any random API can be registered using this method.\n",
@@ -19,7 +29,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MockCallRequest"
+                "$ref": "#/components/schemas/MockCall"
               }
             }
           }
@@ -30,35 +40,63 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MockCallResponse"
+                  "$ref": "#/components/schemas/MockCallId"
                 }
               }
             }
           }
         }
-      }
-    },
-    "/mock-call/{callId}": {
+      },
+      "get": {
+        "summary": "Get a mock API call",
+        "description": "Returns the registered API call\n",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockCall"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "summary": "Delete a mock API call",
         "description": "This API allows un-registering a mock response for a given API call.\n",
-        "parameters": [
-          {
-            "name": "callId",
-            "in": "path",
-            "description": "The call id to be removed",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
-            "description": "successful operation"
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockCallId"
+                }
+              }
+            }
           },
           "404": {
             "description": "When the call id is not found"
+          }
+        }
+      }
+    },
+    "/mock-calls": {
+      "get": {
+        "summary": "Returns all the custom calls registered with the mock server",
+        "description": "This API allows to retrieve the list of all registered mock calls\n",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockCallList"
+                }
+              }
+            }
           }
         }
       }
@@ -66,7 +104,20 @@
   },
   "components": {
     "schemas": {
-      "MockCallRequest": {
+      "MockCallList": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "MockCallId": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b9700e80-87c5-436b-8209-2e4075e29bce"
+          }
+        }
+      },
+      "MockCall": {
         "type": "object",
         "required": [
           "apiName",
@@ -81,7 +132,7 @@
           },
           "apiPath": {
             "type": "string",
-            "example": "/pet/{petId}",
+            "example": "/pet/124",
             "description": "The API path to register the call against."
           },
           "method": {
@@ -168,15 +219,6 @@
           "value": {
             "type": "string",
             "example": "available"
-          }
-        }
-      },
-      "MockCallResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "b9700e80-87c5-436b-8209-2e4075e29bce"
           }
         }
       }

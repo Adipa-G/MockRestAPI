@@ -1,14 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.Dynamic;
 
-using API.Dto;
 using API.Models;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace API.Controller
 {
@@ -23,55 +19,62 @@ namespace API.Controller
             _memoryCache = memoryCache;
         }
 
-        [HttpPost("mock-call")]
-        public async Task<OkObjectResult> RegisterMockCallAsync([FromBody]MockApiCallDto mockApiCall)
+        [HttpGet("mock-call/{callId}")]
+        public ActionResult GetMockCall([FromRoute] string callId)
+        {
+            var idMappings = _memoryCache.Get<ConcurrentDictionary<string, string>>(Constants.IdMappingCacheKey);
+            var cacheKey = idMappings != null && idMappings.ContainsKey(callId) ? idMappings?[callId] : null;
+            var calls = cacheKey != null ? _memoryCache.GetOrCreate(cacheKey!, _ => new List<MockApiCall>()) : new List<MockApiCall>();
+            var call = calls?.FirstOrDefault(c => c.CallId == callId);
+            if (call == null)
+            {
+                return NotFound();
+            }
+            return Ok(call);
+        }
+
+        [HttpPost("mock-call/{callId}")]
+        public ActionResult RegisterMockCall([FromRoute] string callId, [FromBody]MockApiCall mockApiCall)
         {
             var cacheKey = $"{mockApiCall.ApiName.ToLower()}-{mockApiCall.Method.ToUpper()}-{mockApiCall.ApiPath.ToLower().TrimStart('/')}";
-            var callId = Guid.NewGuid().ToString();
             var calls = _memoryCache.GetOrCreate(cacheKey, _ => new List<MockApiCall>());
-
+            var call = calls?.FirstOrDefault(c => c.CallId == callId);
+            if (call != null)
+            {
+                calls?.Remove(call);
+            }
+            
             var idMappings = _memoryCache.Get<ConcurrentDictionary<string, string>>(Constants.IdMappingCacheKey);
             idMappings?.TryAdd(callId, cacheKey);
 
-            var model = new MockApiCall(callId)
-            {
-                Response = mockApiCall.Response?.ToString(),
-                ResponseCode = mockApiCall.ResponseCode,
-                BodyPathsToMatch = mockApiCall.BodyPathsToMatch,
-                HeadersToMatch = mockApiCall.HeadersToMatch,
-                QueryParamsToMatch = mockApiCall.QueryParamsToMatch,
-                ReturnOnlyForNthMatch = mockApiCall.ReturnOnlyForNthMatch,
-                Expiry =
-                DateTimeOffset.Now.Add(
-                TimeSpan.FromSeconds(mockApiCall.TimeToLive.GetValueOrDefault(int.MaxValue)))
-            };
-            calls?.Add(model);
+            mockApiCall.CallId = callId;
+            mockApiCall.Expiry = DateTimeOffset.Now.Add(TimeSpan.FromSeconds(mockApiCall.TimeToLive.GetValueOrDefault(int.MaxValue)));
+            calls?.Add(mockApiCall);
 
             var absoluteExpiration = (calls != null && calls.Any()) ? calls.Max(c => c.Expiry) : DateTimeOffset.Now;
             _memoryCache.Set(cacheKey, calls, absoluteExpiration);
 
-            return await Task.FromResult(Ok(new {id = callId}));
+            return Ok(new {id = callId});
         }
 
         [HttpDelete("mock-call/{callId}")]
-        public StatusCodeResult DeleteMockCallAsync([FromRoute]string callId)
+        public ActionResult RemoveMockCall([FromRoute]string callId)
         {
             var idMappings = _memoryCache.Get<ConcurrentDictionary<string, string>>(Constants.IdMappingCacheKey);
-            var mapping = idMappings?.FirstOrDefault(m => m.Key == callId);
-
-            if (mapping.Equals(default(KeyValuePair<string,string>)))
+            var cacheKey = idMappings != null && idMappings.ContainsKey(callId) ? idMappings?[callId] : null;
+            var calls = cacheKey != null ? _memoryCache.GetOrCreate(cacheKey!, _ => new List<MockApiCall>()) : new List<MockApiCall>();
+            var call = calls?.FirstOrDefault(c => c.CallId == callId);
+            if (call == null)
             {
                 return NotFound();
             }
-            else
-            {
-                idMappings?.Remove(callId, out _);
-                return Ok();
-            }
+            calls?.Remove(call);
+            idMappings?.Remove(callId, out _);
+            return Ok(new { id = callId });
         }
 
-        [HttpGet("all-mock-calls")]
-        public OkObjectResult GetAllMockCallsAsync()
+        [HttpGet("mock-calls")]
+        public OkObjectResult GetAllMockCalls()
         {
             var idMappings = _memoryCache.Get<ConcurrentDictionary<string, string>>(Constants.IdMappingCacheKey);
             var result = new ExpandoObject() as IDictionary<string,object?>;
@@ -88,21 +91,7 @@ namespace API.Controller
 
                     var api = GetChildAddIfNotExists(result, apiTokens[0]);
                     var path = GetChildAddIfNotExists(api, apiTokens[2]);
-
-                    var apiCallDtos = mockApiCalls.Where(mc => mc.Expiry > DateTimeOffset.Now).Select(mc => new MockApiCallDto
-                    {
-                        ApiName = apiTokens[0],
-                        Method = apiTokens[1],
-                        ApiPath = apiTokens[2],
-                        BodyPathsToMatch = mc.BodyPathsToMatch,
-                        HeadersToMatch = mc.HeadersToMatch,
-                        QueryParamsToMatch = mc.QueryParamsToMatch,
-                        ReturnOnlyForNthMatch = mc.ReturnOnlyForNthMatch,
-                        Response = mc.Response != null ? JsonConvert.DeserializeObject<ExpandoObject>(mc.Response) : string.Empty,
-                        ResponseCode = mc.ResponseCode,
-                        TimeToLive = (int)(mc.Expiry - DateTimeOffset.Now).TotalSeconds
-                    });
-                    path.TryAdd(apiTokens[1], apiCallDtos);
+                    path.TryAdd(apiTokens[1], mockApiCalls);
                 }
             }
 
