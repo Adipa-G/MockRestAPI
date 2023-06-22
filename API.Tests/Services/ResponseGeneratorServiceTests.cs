@@ -45,7 +45,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCall = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -77,7 +77,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCall = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -110,7 +110,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCall = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -144,7 +144,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCallOne = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCallOne = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -152,7 +152,7 @@ namespace API.Tests.Services
             };
             AddQueryParametersMatches(mockApiCallOne, "status", "available", "sold");
 
-            var mockApiCallTwo = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCallTwo = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -188,7 +188,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCall = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -223,7 +223,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCall = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -256,7 +256,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCall = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -290,7 +290,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCallOne = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCallOne = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -299,7 +299,7 @@ namespace API.Tests.Services
             AddHeaderMatches(mockApiCallOne, "Authorization", "Bearer 123", "Bearer 234");
             SetMemoryCache(cacheKey, mockApiCallOne);
 
-            var mockApiCallTwo = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCallTwo = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -335,7 +335,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCall = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -377,7 +377,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCall = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -416,7 +416,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCallOne = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCallOne = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -425,7 +425,7 @@ namespace API.Tests.Services
             AddBodyMatches(mockApiCallOne, "category.id", "1");
             SetMemoryCache(cacheKey, mockApiCallOne);
 
-            var mockApiCallTwo = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCallTwo = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -465,7 +465,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCall = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
@@ -500,7 +500,7 @@ namespace API.Tests.Services
 
             var cacheKey = $"{ApiName.ToLower()}-{method.ToUpper()}-{requestPath.ToLower()}";
 
-            var mockApiCall = new MockApiCall(Guid.NewGuid().ToString())
+            var mockApiCall = new MockApiCall()
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
