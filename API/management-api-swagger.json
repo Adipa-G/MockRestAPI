@@ -94,6 +94,68 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MockCallList"
+                },
+                "example": {
+                  "petstore": {
+                    "/pet/findByTags": {
+                      "GET": [
+                        {
+                          "callId": "12435",
+                          "apiName": "petstore",
+                          "apiPath": "/pet/findByTags",
+                          "method": "get",
+                          "queryParamsToMatch": [
+                            {
+                              "key": "value",
+                              "value": "scooby"
+                            }
+                          ],
+                          "headersToMatch": [],
+                          "bodyPathsToMatch": [],
+                          "timeToLive": 360,
+                          "responseCode": 200,
+                          "response": {
+                            "id": 38,
+                            "name": "Scooby Doo",
+                            "category": {
+                              "id": 1,
+                              "name": "Dogs"
+                            },
+                            "status": "available"
+                          },
+                          "returnOnlyForNthMatch": 2,
+                          "matchCount": 0
+                        },
+                        {
+                          "callId": "12436",
+                          "apiName": "petstore",
+                          "apiPath": "/pet/findByTags",
+                          "method": "get",
+                          "queryParamsToMatch": [
+                            {
+                              "key": "value",
+                              "value": "toto"
+                            }
+                          ],
+                          "headersToMatch": [],
+                          "bodyPathsToMatch": [],
+                          "timeToLive": 360,
+                          "responseCode": 200,
+                          "response": {
+                            "id": 50,
+                            "name": "Toto 50",
+                            "category": {
+                              "id": 1,
+                              "name": "Dogs"
+                            },
+                            "status": "available"
+                          },
+                          "returnOnlyForNthMatch": 2,
+                          "matchCount": 0
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }

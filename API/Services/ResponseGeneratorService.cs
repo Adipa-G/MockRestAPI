@@ -1,8 +1,9 @@
-﻿using API.Models;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+
+using API.Models;
 
 using Microsoft.Extensions.Caching.Memory;
-
-using Newtonsoft.Json.Linq;
 
 namespace API.Services
 {
@@ -29,7 +30,7 @@ namespace API.Services
 
             if (match != null)
             {
-                return new KeyValuePair<string, string?>(match.ResponseCode.ToString(), match.Response);
+                return new KeyValuePair<string, string?>(match.ResponseCode.ToString(), JsonSerializer.Serialize(match.Response));
             }
             
             var response =
@@ -156,18 +157,31 @@ namespace API.Services
             if (string.IsNullOrWhiteSpace(requestJson))
                 return new KeyValuePair<bool, int>(false, 0);
 
-            var jObject = JObject.Parse(requestJson);
+            var dynObj = JsonSerializer.Deserialize<JsonObject>(requestJson);
 
             var isMatch = true;
             var score = 0;
             foreach (var bodyPath in apiCall.BodyPathsToMatch)
             {
-                var pathValue = jObject.SelectToken(bodyPath.Key);
-                isMatch = isMatch && pathValue?.Value<string>() == bodyPath.Value;
+                var pathValue = GetPropertyValue(dynObj, bodyPath.Key);
+                isMatch = isMatch && pathValue?.ToString() == bodyPath.Value;
                 if (isMatch)
                     score += 10;
             }
             return new KeyValuePair<bool, int>(isMatch, isMatch ? score : 0);
+        }
+
+        public static JsonNode? GetPropertyValue(JsonNode? src, string propName)
+        {
+            if (propName.Contains("."))
+            {
+                var temp = propName.Split(new[] { '.' }, 2);
+                return GetPropertyValue(GetPropertyValue(src, temp[0]), temp[1]);
+            }
+            else
+            {
+                return src?[propName];
+            }
         }
 
         private KeyValuePair<bool,int> MatchGroupList(List<KeyValuePair<string, List<string>>> matchGroupList, List<KeyValuePair<string, List<string?>>> queryGroupList)

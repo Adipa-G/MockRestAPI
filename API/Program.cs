@@ -21,6 +21,7 @@ builder.Services
     .AddScoped<ISwaggerService,SwaggerService>()
     .AddScoped<ISwaggerExampleResponseBuilderService, SwaggerExampleResponseBuilderService>()
     .AddScoped<IResponseGeneratorService, ResponseGeneratorService>()
+    .AddSingleton<IMockCallsLoader, MockCallsLoader>()
     .AddControllers();
 
 var app = builder.Build();
@@ -70,5 +71,8 @@ app.Use(async (context, next) =>
 var memoryCache = app.Services.GetService<IMemoryCache>();
 var idMappings = new ConcurrentDictionary<string, string>();
 memoryCache?.Set(Constants.IdMappingCacheKey, idMappings);
+
+var mockCallsLoader = app.Services.GetService<IMockCallsLoader>()!;
+await mockCallsLoader.LoadMockCallsAsync();
 
 app.Run();

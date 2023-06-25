@@ -1,9 +1,8 @@
 ﻿using System.Dynamic;
+using System.Text.Json;
 
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
-
-using Newtonsoft.Json;
 
 namespace API.Services
 {
@@ -69,7 +68,7 @@ namespace API.Services
 
             var responseCode = response.Key;
             var example = GenerateExample(content.Value, requestPath);
-            var exampleJson = JsonConvert.SerializeObject(example);
+            var exampleJson = JsonSerializer.Serialize(example);
             return new KeyValuePair<string, string?>(responseCode, exampleJson);
         }
 

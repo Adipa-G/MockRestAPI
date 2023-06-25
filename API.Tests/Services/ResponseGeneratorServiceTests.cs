@@ -16,6 +16,8 @@ using NSubstitute;
 
 using Xunit;
 
+using JsonSerializer = System.Text.Json.JsonSerializer;
+
 namespace API.Tests.Services
 {
     public class ResponseGeneratorServiceTests
@@ -49,7 +51,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             SetMemoryCache(cacheKey, mockApiCall);
 
@@ -81,7 +83,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddQueryParametersMatches(mockApiCall, "status", "available", "sold");
             SetMemoryCache(cacheKey, mockApiCall);
@@ -114,7 +116,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddQueryParametersMatches(mockApiCall, "status", "available", "sold");
             SetMemoryCache(cacheKey, mockApiCall);
@@ -156,7 +158,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddQueryParametersMatches(mockApiCallTwo, "status", "available", "sold");
             AddQueryParametersMatches(mockApiCallTwo, "type", "dog", "cat");
@@ -192,7 +194,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddQueryParametersMatches(mockApiCall, "status", "available", "sold");
             AddQueryParametersMatches(mockApiCall, "type", "dog", "cat");
@@ -227,7 +229,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddHeaderMatches(mockApiCall, "Authorization", "Bearer 123", "Bearer 234");
             SetMemoryCache(cacheKey, mockApiCall);
@@ -242,7 +244,7 @@ namespace API.Tests.Services
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(false);
             result.Key.Should().Be(responseStatusCode.ToString());
-            result.Value.Should().Be(JsonConvert.SerializeObject(response));
+            result.Value.Should().Be(JsonSerializer.Serialize(response));
         }
 
         [Fact]
@@ -260,7 +262,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddHeaderMatches(mockApiCall, "Authorization", "Bearer 123", "Bearer 234");
             SetMemoryCache(cacheKey, mockApiCall);
@@ -303,7 +305,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddHeaderMatches(mockApiCallTwo, "Authorization", "Bearer 123", "Bearer 234");
             AddHeaderMatches(mockApiCallTwo, "ClientId", "123", "234");
@@ -339,7 +341,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddHeaderMatches(mockApiCall, "Authorization", "Bearer 123", "Bearer 234");
             AddHeaderMatches(mockApiCall, "ClientId", "123", "234");
@@ -381,7 +383,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddBodyMatches(mockApiCall, "category.id", "1");
             SetMemoryCache(cacheKey, mockApiCall);
@@ -429,7 +431,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddBodyMatches(mockApiCallTwo, "category.id", "1");
             AddBodyMatches(mockApiCallTwo, "status", "sold");
@@ -469,7 +471,7 @@ namespace API.Tests.Services
             {
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddBodyMatches(mockApiCall, "category.id", "1");
             AddBodyMatches(mockApiCall, "status", "sold");
@@ -505,7 +507,7 @@ namespace API.Tests.Services
                 Expiry = DateTimeOffset.MaxValue,
                 ResponseCode = responseStatusCode,
                 ReturnOnlyForNthMatch = 2,
-                Response = JsonConvert.SerializeObject(response)
+                Response = response
             };
             AddQueryParametersMatches(mockApiCall, "status", "sold");
 
