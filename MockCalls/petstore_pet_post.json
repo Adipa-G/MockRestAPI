@@ -1,0 +1,33 @@
+{
+    "petstore": {
+        "pet": {
+            "POST": [{
+                    "callId": "12439",
+                    "apiName": "petstore",
+                    "apiPath": "/pet",
+                    "method": "post",
+                    "queryParamsToMatch": [],
+                    "headersToMatch": [],
+                    "bodyPathsToMatch": [{
+                            "key": "x",
+                            "value": "5"
+                        }
+                    ],
+                    "timeToLive": 360,
+                    "responseCode": 200,
+                    "response": {
+                        "id": 38,
+                        "name": "Scooby Doo",
+                        "category": {
+                            "id": 1,
+                            "name": "Dogs"
+                        },
+                        "status": "available"
+                    },
+                    "returnOnlyForNthMatch": null,
+                    "matchCount": 0
+                }
+            ]
+        }
+    }
+}

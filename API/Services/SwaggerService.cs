@@ -1,5 +1,6 @@
 ﻿using System.IO.Abstractions;
 using System.Reflection;
+using System.Text.Json;
 
 using API.Options;
 
@@ -8,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
 using Microsoft.OpenApi.Writers;
-using Newtonsoft.Json;
 
 namespace API.Services
 {
@@ -90,7 +90,7 @@ namespace API.Services
                 }
                 catch (Exception e)
                 {
-                    var diagnosticJson = JsonConvert.SerializeObject(diagnostic);
+                    var diagnosticJson = JsonSerializer.Serialize(diagnostic);
                     _logger.LogError(e, "Could not parse the open api spec. Diagnostic details : [{diagnostic}]",
                         diagnosticJson);
                 }
@@ -157,17 +157,7 @@ namespace API.Services
 
         private IDirectoryInfo? GetBaseDirectory()
         {
-            var dir = _fileSystem.DirectoryInfo.New(AppDomain.CurrentDomain.BaseDirectory);
-            do
-            {
-                if (dir.GetDirectories().Any(d => d.Name == _configOptions.RootFolderName))
-                {
-                    dir = dir.GetDirectories().FirstOrDefault(d => d.Name == _configOptions.RootFolderName);
-                    break;
-                }
-                dir = dir.Parent;
-            } while (dir?.Parent != null);
-            return dir;
+            return DirectoryUtils.GetBaseDirectory(_fileSystem, _configOptions.RootFolderName);
         }
     }
 }

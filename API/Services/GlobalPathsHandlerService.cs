@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace API.Services
+﻿namespace API.Services
 {
     public class GlobalPathsHandlerService : IGlobalPathsHandlerService
     {
