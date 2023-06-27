@@ -1,0 +1,34 @@
+{
+  "petstore": {
+    "/pet/findByStatus": {
+      "GET": [
+        {
+          "callId": "12439",
+          "apiName": "petstore",
+          "apiPath": "/pet/findByStatus",
+          "method": "GET",
+          "queryParamsToMatch": [
+            {
+              "key": "status",
+              "value": "sold"
+            }
+          ],
+          "headersToMatch": [],
+          "bodyPathsToMatch": [],
+          "timeToLive": 360,
+          "responseCode": 200,
+          "response": {
+            "id": 38,
+            "name": "Scooby Doo",
+            "category": {
+              "id": 1,
+              "name": "Dogs"
+            },
+            "status": "sold"
+          },
+          "returnOnlyForNthMatch": 2
+        }
+      ]
+    }
+  }
+}

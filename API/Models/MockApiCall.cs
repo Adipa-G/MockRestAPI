@@ -15,8 +15,9 @@ namespace API.Models
         public int ResponseCode { get; set; }
         public dynamic? Response { get; set; }
         public int? ReturnOnlyForNthMatch { get; set; }
-        public int MatchCount { get; set; }
 
+        [JsonIgnore]
+        public int MatchCount { get; set; }
         [JsonIgnore]
         public DateTimeOffset Expiry { get; set; }
     }

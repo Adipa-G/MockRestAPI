@@ -35,9 +35,12 @@ namespace API.Services
             var rootFolderAbsolutePath = GetBaseDirectory();
             var allFiles = rootFolderAbsolutePath?.GetFiles("*.json", SearchOption.AllDirectories);
 
-            if (allFiles == null)
+            if (allFiles == null || !allFiles.Any())
+            {
+                _logger.LogInformation("Did not found any mock calls in the folder {folder}", rootFolderAbsolutePath);
                 return;
-
+            }
+                
             foreach (IFileInfo jsonFile in allFiles)
             {
                 try
@@ -81,21 +84,25 @@ namespace API.Services
                     methodValue?.ToString() ?? string.Empty,
                     new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
-                foreach (MockApiCall mockApiCall in dtos)
+                if (dtos != null)
                 {
-                    var call = calls?.FirstOrDefault(c => c.CallId == mockApiCall.CallId);
-                    if (call != null)
+                    foreach (MockApiCall mockApiCall in dtos)
                     {
-                        _logger.LogError("Ignoring the call {0} from the file {1} as the CallId is already exists",
-                            mockApiCall.CallId, jsonFile);
+                        var idMappings =
+                            _memoryCache.Get<ConcurrentDictionary<string, string>>(Constants.IdMappingCacheKey);
+                        if (idMappings?.ContainsKey(mockApiCall.CallId!) ?? true)
+                        {
+                            _logger.LogError("Ignoring the call {0} from the file {1} as the CallId is already exists",
+                                mockApiCall.CallId, jsonFile);
+                            continue;
+                        }
+
+                        idMappings?.TryAdd(mockApiCall.CallId!, cacheKey);
+                        mockApiCall.Expiry =
+                            DateTimeOffset.Now.Add(
+                                TimeSpan.FromSeconds(mockApiCall.TimeToLive.GetValueOrDefault(int.MaxValue)));
+                        calls?.Add(mockApiCall);
                     }
-
-                    var idMappings = _memoryCache.Get<ConcurrentDictionary<string, string>>(Constants.IdMappingCacheKey);
-                    idMappings?.TryAdd(mockApiCall.CallId!, cacheKey);
-
-                    mockApiCall.Expiry =
-                        DateTimeOffset.Now.Add(TimeSpan.FromSeconds(mockApiCall.TimeToLive.GetValueOrDefault(int.MaxValue)));
-                    calls?.Add(mockApiCall);
                 }
 
                 var absoluteExpiration = (calls != null && calls.Any()) ? calls.Max(c => c.Expiry) : DateTimeOffset.Now;
