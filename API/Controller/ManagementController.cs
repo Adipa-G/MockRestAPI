@@ -2,6 +2,7 @@
 using System.Dynamic;
 
 using API.Models;
+using API.Services;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -13,10 +14,12 @@ namespace API.Controller
     public class ManagementController : ControllerBase
     {
         private readonly IMemoryCache _memoryCache;
+        private readonly IMockCallsLoader _mockCallsLoader;
 
-        public ManagementController(IMemoryCache memoryCache)
+        public ManagementController(IMemoryCache memoryCache, IMockCallsLoader mockCallsLoader)
         {
             _memoryCache = memoryCache;
+            _mockCallsLoader = mockCallsLoader;
         }
 
         [HttpGet("mock-call/{callId}")]
@@ -96,6 +99,19 @@ namespace API.Controller
             }
 
             return new OkObjectResult(result);
+        }
+
+        [HttpPost("reset")]
+        public async Task<OkResult> Reset()
+        {
+            var cache = _memoryCache as MemoryCache;
+            cache?.Clear();
+
+            var idMappings = new ConcurrentDictionary<string, string>();
+            _memoryCache?.Set(Constants.IdMappingCacheKey, idMappings);
+            await _mockCallsLoader.LoadMockCallsAsync();
+
+            return new OkResult();
         }
 
         private IDictionary<string, object?> GetChildAddIfNotExists(IDictionary<string, object?> parent, string childPath)

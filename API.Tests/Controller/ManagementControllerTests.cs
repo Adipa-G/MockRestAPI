@@ -1,7 +1,9 @@
 ﻿using System.Collections.Concurrent;
+using System.Net;
 
 using API.Controller;
 using API.Models;
+using API.Services;
 
 using FluentAssertions;
 
@@ -19,10 +21,12 @@ namespace API.Tests.Controller
     public class ManagementControllerTests
     {
         private IMemoryCache _memoryCache;
+        private IMockCallsLoader _mockCallsLoader;
 
         public ManagementControllerTests()
         {
             _memoryCache = Substitute.For<IMemoryCache>();
+            _mockCallsLoader = Substitute.For<IMockCallsLoader>();
         }
 
         [Fact]
@@ -102,6 +106,18 @@ namespace API.Tests.Controller
             resultJson.Should().Be(expectedJson);
         }
 
+        [Fact]
+        public async Task WhenReset_ThenReload()
+        {
+            //Act
+            var sut = CreateSut();
+            var result = await sut.Reset() as OkResult;
+
+            //Assert
+            await _mockCallsLoader.Received(1).LoadMockCallsAsync();
+            result.StatusCode.Should().Be((int)HttpStatusCode.OK);
+        }
+
         private void CacheApiMappings(string callId, string cacheKey)
         {
             _memoryCache.TryGetValue(Constants.IdMappingCacheKey, out Arg.Any<ConcurrentDictionary<string,string>?>())
@@ -124,7 +140,7 @@ namespace API.Tests.Controller
 
         private ManagementController CreateSut()
         {
-            return new ManagementController(_memoryCache);
+            return new ManagementController(_memoryCache, _mockCallsLoader);
         }
     }
 }

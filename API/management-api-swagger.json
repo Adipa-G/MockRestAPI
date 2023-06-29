@@ -162,6 +162,17 @@
           }
         }
       }
+    },
+    "/reset": {
+      "post": {
+        "summary": "Reset the server to the state at the startup",
+        "description": "This call will clear out any calls setup using this API, and reload the state at the startup (by loading calls from the config files).",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
     }
   },
   "components": {
