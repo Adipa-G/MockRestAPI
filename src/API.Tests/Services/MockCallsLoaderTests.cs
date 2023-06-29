@@ -58,7 +58,8 @@ namespace API.Tests.Services
             SetMemoryCache(cacheKey, cache);
             SetMemoryCache(Constants.IdMappingCacheKey, mappings);
 
-            var json = await File.ReadAllTextAsync("Samples\\valid-mock-call.json");
+            var path = Path.Combine("Samples", "valid-mock-call.json");
+            var json = await File.ReadAllTextAsync(path);
             var folder = SetupFolder("mock-api-calls");
             SetupFile(folder.Name, new []{"a.json"}, new []{json});
 
@@ -105,7 +106,8 @@ namespace API.Tests.Services
             SetMemoryCache(cacheKey, cache);
             SetMemoryCache(Constants.IdMappingCacheKey, mappings);
 
-            var json = await File.ReadAllTextAsync("Samples\\duplicate-mock-call.json");
+            var path = Path.Combine("Samples", "duplicate-mock-call.json");
+            var json = await File.ReadAllTextAsync(path);
             var folder = SetupFolder("mock-api-calls");
             SetupFile(folder.Name, new[] { "a.json" }, new[] { json });
 
