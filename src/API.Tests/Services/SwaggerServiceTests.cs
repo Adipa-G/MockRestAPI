@@ -91,7 +91,7 @@ namespace API.Tests.Services
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
-                    new() { ApiName = ApiName, SwaggerLocation = $"{ApiName}\\swagger.json" }
+                    new() { ApiName = ApiName, SwaggerLocation =Path.Combine(ApiName,"swagger.json") }
                 }
             });
             var appDir = Substitute.For<IDirectoryInfo>();
@@ -118,20 +118,20 @@ namespace API.Tests.Services
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
-                    new() { ApiName = ApiName, SwaggerLocation = $"{ApiName}\\swagger.json"  }
+                    new() { ApiName = ApiName, SwaggerLocation =Path.Combine(ApiName,"swagger.json")  }
                 }
             });
 
 
             var apiDefDirectory = Substitute.For<IDirectoryInfo>();
             apiDefDirectory.Name.Returns(apiDefDirectoryName);
-            apiDefDirectory.FullName.Returns($"z:\\\\{apiDefDirectoryName}");
+            apiDefDirectory.FullName.Returns(apiDefDirectoryName);
 
             var appDir = Substitute.For<IDirectoryInfo>();
             appDir.GetDirectories().Returns(new[] { apiDefDirectory });
 
             _fileSystem.DirectoryInfo.New(Arg.Any<string>()).Returns(appDir);
-            _fileSystem.File.Exists($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json").Returns(false);
+            _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Returns(false);
 
             //Act
             var sut = CreateSut();
@@ -152,20 +152,20 @@ namespace API.Tests.Services
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
-                    new() { ApiName = ApiName, SwaggerLocation = $"{ApiName}\\swagger.json"  }
+                    new() { ApiName = ApiName, SwaggerLocation =Path.Combine(ApiName,"swagger.json")  }
                 }
             });
 
 
             var apiDefDirectory = Substitute.For<IDirectoryInfo>();
             apiDefDirectory.Name.Returns(apiDefDirectoryName);
-            apiDefDirectory.FullName.Returns($"z:\\\\{apiDefDirectoryName}");
+            apiDefDirectory.FullName.Returns(apiDefDirectoryName);
 
             var appDir = Substitute.For<IDirectoryInfo>();
             appDir.GetDirectories().Returns(new[] { apiDefDirectory });
 
             _fileSystem.DirectoryInfo.New(Arg.Any<string>()).Returns(appDir);
-            _fileSystem.File.Exists($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json").Throws(new Exception("whatever"));
+            _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Throws(new Exception("whatever"));
 
             //Act
             var sut = CreateSut();
@@ -213,24 +213,24 @@ namespace API.Tests.Services
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
-                    new() { ApiName = ApiName, SwaggerLocation = $"{ApiName}\\swagger.json"  }
+                    new() { ApiName = ApiName, SwaggerLocation =Path.Combine(ApiName,"swagger.json")  }
                 }
             });
 
 
             var apiDefDirectory = Substitute.For<IDirectoryInfo>();
             apiDefDirectory.Name.Returns(apiDefDirectoryName);
-            apiDefDirectory.FullName.Returns($"z:\\\\{apiDefDirectoryName}");
+            apiDefDirectory.FullName.Returns(apiDefDirectoryName);
 
             var appDir = Substitute.For<IDirectoryInfo>();
             appDir.GetDirectories().Returns(new[] { apiDefDirectory });
 
             _fileSystem.DirectoryInfo.New(Arg.Any<string>()).Returns(appDir);
-            _fileSystem.File.Exists($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json").Returns(true);
+            _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Returns(true);
 
             var current = new FileSystem().CurrentDirectory();
-            var stream = current.FileSystem.FileInfo.New("Samples\\invalid-open-api-def.json").OpenRead();
-            _fileSystem.File.Open($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json", FileMode.Open).Returns(stream);
+            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples","invalid-open-api-def.json")).OpenRead();
+            _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json"), FileMode.Open).Returns(stream);
 
             //Act
             var sut = CreateSut();
@@ -250,24 +250,24 @@ namespace API.Tests.Services
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
-                    new() { ApiName = ApiName, SwaggerLocation = $"{ApiName}\\swagger.json"  }
+                    new() { ApiName = ApiName, SwaggerLocation = Path.Combine(ApiName,"swagger.json")  }
                 }
             });
 
 
             var apiDefDirectory = Substitute.For<IDirectoryInfo>();
             apiDefDirectory.Name.Returns(apiDefDirectoryName);
-            apiDefDirectory.FullName.Returns($"z:\\\\{apiDefDirectoryName}");
+            apiDefDirectory.FullName.Returns(apiDefDirectoryName);
 
             var appDir = Substitute.For<IDirectoryInfo>();
             appDir.GetDirectories().Returns(new[] { apiDefDirectory });
 
             _fileSystem.DirectoryInfo.New(Arg.Any<string>()).Returns(appDir);
-            _fileSystem.File.Exists($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json").Returns(true);
+            _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Returns(true);
 
             var current = new FileSystem().CurrentDirectory();
-            var stream = current.FileSystem.FileInfo.New("Samples\\valid-open-api-def.json").OpenRead();
-            _fileSystem.File.Open($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json", FileMode.Open).Returns(stream);
+            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples","valid-open-api-def.json")).OpenRead();
+            _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json"), FileMode.Open).Returns(stream);
 
             //Act
             var sut = CreateSut();
@@ -291,14 +291,14 @@ namespace API.Tests.Services
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
-                    new() { ApiName = ApiName, SwaggerLocation = $"{ApiName}\\swagger.json"  }
+                    new() { ApiName = ApiName, SwaggerLocation = Path.Combine(ApiName,"swagger.json")  }
                 }
             });
 
 
             var apiDefDirectory = Substitute.For<IDirectoryInfo>();
             apiDefDirectory.Name.Returns(apiDefDirectoryName);
-            apiDefDirectory.FullName.Returns($"z:\\\\{apiDefDirectoryName}");
+            apiDefDirectory.FullName.Returns(apiDefDirectoryName);
 
             var appParentDir = Substitute.For<IDirectoryInfo>();
             appParentDir.GetDirectories().Returns(new[] { apiDefDirectory });
@@ -307,11 +307,11 @@ namespace API.Tests.Services
             appDir.Parent.Returns(appParentDir);
 
             _fileSystem.DirectoryInfo.New(Arg.Any<string>()).Returns(appDir);
-            _fileSystem.File.Exists($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json").Returns(true);
+            _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Returns(true);
 
             var current = new FileSystem().CurrentDirectory();
-            var stream = current.FileSystem.FileInfo.New("Samples\\valid-open-api-def.json").OpenRead();
-            _fileSystem.File.Open($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json", FileMode.Open).Returns(stream);
+            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples","valid-open-api-def.json")).OpenRead();
+            _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json"), FileMode.Open).Returns(stream);
 
             //Act
             var sut = CreateSut();
@@ -331,24 +331,24 @@ namespace API.Tests.Services
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
-                    new() { ApiName = ApiName, SwaggerLocation = $"{ApiName}\\swagger.json"  }
+                    new() { ApiName = ApiName, SwaggerLocation = Path.Combine(ApiName,"swagger.json")  }
                 }
             });
 
 
             var apiDefDirectory = Substitute.For<IDirectoryInfo>();
             apiDefDirectory.Name.Returns(apiDefDirectoryName);
-            apiDefDirectory.FullName.Returns($"z:\\\\{apiDefDirectoryName}");
+            apiDefDirectory.FullName.Returns(apiDefDirectoryName);
 
             var appDir = Substitute.For<IDirectoryInfo>();
             appDir.GetDirectories().Returns(new[] { apiDefDirectory });
 
             _fileSystem.DirectoryInfo.New(Arg.Any<string>()).Returns(appDir);
-            _fileSystem.File.Exists($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json").Returns(true);
+            _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName,ApiName,"swagger.json")).Returns(true);
 
             var current = new FileSystem().CurrentDirectory();
-            var stream = current.FileSystem.FileInfo.New("Samples\\invalid-open-api-def.json").OpenRead();
-            _fileSystem.File.Open($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json", FileMode.Open).Returns(stream);
+            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples","invalid-open-api-def.json")).OpenRead();
+            _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json"), FileMode.Open).Returns(stream);
 
             //Act
             var sut = CreateSut();
@@ -368,24 +368,24 @@ namespace API.Tests.Services
                 RootFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
-                    new() { ApiName = ApiName, SwaggerLocation = $"{ApiName}\\swagger.json"  }
+                    new() { ApiName = ApiName, SwaggerLocation = Path.Combine(ApiName,"swagger.json")  }
                 }
             });
 
 
             var apiDefDirectory = Substitute.For<IDirectoryInfo>();
             apiDefDirectory.Name.Returns(apiDefDirectoryName);
-            apiDefDirectory.FullName.Returns($"z:\\\\{apiDefDirectoryName}");
+            apiDefDirectory.FullName.Returns(apiDefDirectoryName);
 
             var appDir = Substitute.For<IDirectoryInfo>();
             appDir.GetDirectories().Returns(new[] { apiDefDirectory });
 
             _fileSystem.DirectoryInfo.New(Arg.Any<string>()).Returns(appDir);
-            _fileSystem.File.Exists($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json").Returns(true);
+            _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Returns(true);
 
             var current = new FileSystem().CurrentDirectory();
-            var stream = current.FileSystem.FileInfo.New("Samples\\valid-open-api-def.json").OpenRead();
-            _fileSystem.File.Open($"{apiDefDirectory.FullName}\\{ApiName}\\swagger.json", FileMode.Open).Returns(stream);
+            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples","valid-open-api-def.json")).OpenRead();
+            _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName,ApiName,"swagger.json"), FileMode.Open).Returns(stream);
 
             //Act
             var sut = CreateSut();
