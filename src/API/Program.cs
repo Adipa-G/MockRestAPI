@@ -9,7 +9,10 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
-var configurationRoot = builder.Configuration.AddJsonFile("appsettings.json").Build();
+var configurationRoot = builder.Configuration
+    .AddJsonFile("appsettings.json")
+    .AddJsonFile("appsettings.Development.json", true)
+    .Build();
 // Add services to the container.
 
 builder.Services
@@ -33,7 +36,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 var endpointOptions = app.Services.GetService<IOptions<ConfigOptions>>();
-if (endpointOptions?.Value != null)
+if (endpointOptions?.Value.Apis != null)
 {
     var apiDefs = endpointOptions.Value.Apis;
     foreach (var apiDef in apiDefs)
