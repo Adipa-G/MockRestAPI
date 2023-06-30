@@ -157,7 +157,7 @@ namespace API.Services
 
         private IDirectoryInfo? GetBaseDirectory()
         {
-            return DirectoryUtils.GetBaseDirectory(_fileSystem, _configOptions.RootFolderName);
+            return DirectoryUtils.GetBaseDirectory( _logger ,_fileSystem, _configOptions.RootFolderName);
         }
     }
 }
