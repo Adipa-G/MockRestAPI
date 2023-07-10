@@ -3,6 +3,7 @@ run-name: Build and Test
 on: [push]
 jobs:
   build-and-test-solution:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
