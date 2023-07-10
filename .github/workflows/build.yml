@@ -14,11 +14,11 @@ jobs:
       - name: Install Tools
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
       - name: Install dependencies
-        run: dotnet restore
+        run: dotnet restore ./src/MockRestServer.sln
       - name: Build 
-        run: dotnet build
+        run: dotnet build ./src/MockRestServer.sln
       - name: Test 
-        run: dotnet test --logger trx --collect:"XPlat Code Coverage"
+        run: dotnet test ./src/MockRestServer.sln --logger trx --collect:"XPlat Code Coverage"
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: always()
