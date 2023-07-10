@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configurationRoot = builder.Configuration
     .AddJsonFile("appsettings.json")
     .AddJsonFile("appsettings.Development.json", true)
+    .AddEnvironmentVariables()
     .Build();
 // Add services to the container.
 

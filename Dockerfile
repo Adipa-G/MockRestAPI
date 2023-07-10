@@ -14,9 +14,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0
 ENV ASPNETCORE_URLS=http://+:5000
 EXPOSE 5000
 WORKDIR /app
-COPY src/Endpoints ./Endpoints
-COPY src/MockCalls ./MockCalls
 COPY --from=build /out ./bin
-RUN ls -R
 WORKDIR /app/bin
 ENTRYPOINT ["dotnet", "API.dll"]
