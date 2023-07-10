@@ -124,7 +124,7 @@ namespace API.Services
                 {
                     _logger.LogError(
                         "Could not find the Directory : [{baseDirectory}] in either the application directory or any of the parent directories",
-                        _configOptions.RootFolderName);
+                        _configOptions.ApiDefSubFolderName);
                     return Task.FromResult((Stream?)null);
                 }
 
@@ -157,7 +157,7 @@ namespace API.Services
 
         private IDirectoryInfo? GetBaseDirectory()
         {
-            return DirectoryUtils.GetBaseDirectory( _logger ,_fileSystem, _configOptions.RootFolderName);
+            return DirectoryUtils.GetBaseDirectory( _logger ,_fileSystem, _configOptions.ApiDefSubFolderName);
         }
     }
 }

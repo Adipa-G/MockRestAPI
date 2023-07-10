@@ -88,7 +88,7 @@ namespace API.Tests.Services
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new ConfigOptions()
             {
-                RootFolderName = apiDefDirectoryName,
+                ApiDefSubFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
                     new() { ApiName = ApiName, SwaggerLocation =Path.Combine(ApiName,"swagger.json") }
@@ -115,7 +115,7 @@ namespace API.Tests.Services
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new ConfigOptions()
             {
-                RootFolderName = apiDefDirectoryName,
+                ApiDefSubFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
                     new() { ApiName = ApiName, SwaggerLocation =Path.Combine(ApiName,"swagger.json")  }
@@ -149,7 +149,7 @@ namespace API.Tests.Services
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new ConfigOptions()
             {
-                RootFolderName = apiDefDirectoryName,
+                ApiDefSubFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
                     new() { ApiName = ApiName, SwaggerLocation =Path.Combine(ApiName,"swagger.json")  }
@@ -188,7 +188,7 @@ namespace API.Tests.Services
 
             _endpointOptions.Value.Returns(new ConfigOptions()
             {
-                RootFolderName = "test",
+                ApiDefSubFolderName = "test",
                 Apis = new List<EndpointOptionsApi>()
                 {
                     new() { ApiName = ApiName, SwaggerLocation = swggerUrl }
@@ -210,7 +210,7 @@ namespace API.Tests.Services
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new ConfigOptions()
             {
-                RootFolderName = apiDefDirectoryName,
+                ApiDefSubFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
                     new() { ApiName = ApiName, SwaggerLocation =Path.Combine(ApiName,"swagger.json")  }
@@ -247,7 +247,7 @@ namespace API.Tests.Services
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new ConfigOptions()
             {
-                RootFolderName = apiDefDirectoryName,
+                ApiDefSubFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
                     new() { ApiName = ApiName, SwaggerLocation = Path.Combine(ApiName,"swagger.json")  }
@@ -288,7 +288,7 @@ namespace API.Tests.Services
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new ConfigOptions()
             {
-                RootFolderName = apiDefDirectoryName,
+                ApiDefSubFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
                     new() { ApiName = ApiName, SwaggerLocation = Path.Combine(ApiName,"swagger.json")  }
@@ -328,7 +328,7 @@ namespace API.Tests.Services
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new ConfigOptions()
             {
-                RootFolderName = apiDefDirectoryName,
+                ApiDefSubFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
                     new() { ApiName = ApiName, SwaggerLocation = Path.Combine(ApiName,"swagger.json")  }
@@ -365,7 +365,7 @@ namespace API.Tests.Services
             var apiDefDirectoryName = "apiDefs";
             _endpointOptions.Value.Returns(new ConfigOptions()
             {
-                RootFolderName = apiDefDirectoryName,
+                ApiDefSubFolderName = apiDefDirectoryName,
                 Apis = new List<EndpointOptionsApi>()
                 {
                     new() { ApiName = ApiName, SwaggerLocation = Path.Combine(ApiName,"swagger.json")  }
