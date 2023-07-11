@@ -6,7 +6,7 @@
 MockRestAPI is a powerful and flexible tool that enables developers and testers to simulate REST API calls with ease. Whether you're working on application development, testing different scenarios, or building integrations, this tool offers a convenient way to generate mock API responses.
 
 ### Key Features
-- **Seamless Swagger Integration:** Generate mock responses based on Swagger files (OpenAPI specifications) for quick and accurate simulation of REST APIs. Extract endpoint paths, HTTP methods, request parameters, and response schemas to generate realistic mock data.
+- **Seamless Swagger Integration:** Generate mock responses based on Swagger files (OpenAPI specifications) for quick and accurate simulation of REST APIs. 
 - **Dynamic API Call Registration:** Register API calls dynamically, allowing users to define specific responses for different endpoints and scenarios. Customize the behaviour of the mocked API to match your requirements.
 - **Request Matching Mechanism:** Effortlessly match incoming requests to the registered endpoints by comparing the request's path, HTTP method, query parameters, headers, and request body. Ensure the appropriate mock response is provided for each API call.
 
