@@ -6,7 +6,7 @@ services:
     container_name: mock-rest-server
     ports:
       - 5000:5000
-    env_file: docker.env
+    env_file: ./example/docker.env
     volumes:
-      - ./MockCalls:/app/MockCalls
-      - ./Endpoints:/app/Endpoints
+      - ./example/MockCalls:/app/MockCalls
+      - ./example/Endpoints:/app/Endpoints
