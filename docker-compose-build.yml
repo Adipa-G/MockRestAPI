@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  mock-rest-server:
-    container_name: mock-rest-server
+  mock-rest-api:
+    container_name: mock-rest-api
     build:
       context: .
       dockerfile: Dockerfile
