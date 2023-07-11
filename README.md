@@ -1,5 +1,8 @@
 # MockRestAPI: Simulate REST API Calls for Development and Testing
 
+## Build Status
+[![MockRestAPI](https://github.com/Adipa-G/MockRestAPI/actions/workflows/build.yml/badge.svg)](https://github.com/Adipa-G/MockRestAPI/actions/workflows/build.yml)
+
 ## Introduction
 MockRestAPI is a powerful and flexible tool that enables developers and testers to simulate REST API calls with ease. Whether you're working on application development, testing different scenarios, or building integrations, this tool offers a convenient way to generate mock API responses.
 
