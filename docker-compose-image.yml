@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  mock-rest-server:
-    image: adipa/mock-rest-server
-    container_name: mock-rest-server
+  mock-rest-api:
+    image: adipa/mock-rest-api
+    container_name: mock-rest-api
     ports:
       - 5000:5000
     env_file: ./example/docker.env

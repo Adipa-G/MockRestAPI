@@ -11,6 +11,8 @@ MockRestAPI is a powerful and flexible tool that enables developers and testers 
 ## Usage Guide
 The easiest way to use MockRestAPI is by using the Docker image. The image is hosted on Docker Hub and can be used to run MockRestAPI. You can configure the Docker image using environment variables and mounted volumes. An example Docker Compose file (`docker-compose-image.yml`) is provided to demonstrate how to set up a MockRestAPI instance using environment variables and volumes.
 
+Also, you can build the docker image from the source code and run using the `docker-compose-build.yml` docker compose file.
+
 ### Configuration
 MockRestAPI allows you to host a mock API using a Swagger file. The Swagger file can be either a file on the file system or a hosted file. The list of APIs can be defined as an array and provided as environment variables to the Docker container. Physical Swagger files should be placed inside a folder defined by the `Endpoints__ApiDefSubFolderName` environment variable. In the examples, we have mounted the folder as a volume in the Docker Compose.
 
