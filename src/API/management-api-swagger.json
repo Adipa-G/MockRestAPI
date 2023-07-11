@@ -198,6 +198,11 @@
           "method"
         ],
         "properties": {
+		  "callId" : {
+			"type": "string",
+            "example": "12436",
+            "description": "The API call id.\n"
+		  },
           "apiName": {
             "type": "string",
             "example": "petstore",
