@@ -44,7 +44,7 @@ This section describes the process of generating responses using Swagger specifi
 
 If the Swagger specification contains examples as shown in the following YAML snippet, and the request path has an exact match, the matching example is returned.
 
-```yml
+```json
 "/pet/{petId}": {
     "get": {
         "summary": "Find pet by ID",
@@ -116,7 +116,7 @@ In this example, if the request is `/pet/38` or `/pet/41`, the matching example 
 
 If the Swagger specification contains a single example, it is returned for the corresponding example. If there are multiple examples for individual routes and none of the routes match, the default example is returned.
 
-```yml
+```json
 "/pet/{petId}": {
     "get": {
         "summary": "Find pet by ID",
@@ -162,7 +162,7 @@ If the Swagger specification contains a single example, it is returned for the c
 
 If the Swagger specification does not contain any matching examples, an example is constructed using the schema's default values.
 
-```yml
+```json
 "/pet/{petId}": {
     "get": {
         "summary": "Find pet by ID",
@@ -195,6 +195,32 @@ If the Swagger specification does not contain any matching examples, an example 
 }
 "components": {
     "schemas": {
+        "Category": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Dogs"
+                }
+            }
+        },
+        "Tag": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "Pet": {
             "required": [
                 "name",
@@ -245,9 +271,6 @@ If the Swagger specification does not contain any matching examples, an example 
                     ],
                     "example": "available"
                 }
-            },
-            "xml": {
-                "name": "pet"
             }
         }
     }
