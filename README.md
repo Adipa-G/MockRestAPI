@@ -1,6 +1,5 @@
 # MockRestAPI: Simulate REST API Calls for Development and Testing
 
-## Build Status
 [![MockRestAPI](https://github.com/Adipa-G/MockRestAPI/actions/workflows/build.yml/badge.svg)](https://github.com/Adipa-G/MockRestAPI/actions/workflows/build.yml)
 
 ## Introduction
