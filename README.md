@@ -11,12 +11,33 @@ MockRestAPI is a powerful and flexible tool that enables developers and testers 
 - **Request Matching Mechanism:** Effortlessly match incoming requests to the registered endpoints by comparing the request's path, HTTP method, query parameters, headers, and request body. Ensure the appropriate mock response is provided for each API call.
 
 ## Usage Guide
+### Locally
+
 The easiest way to use MockRestAPI is by using the Docker image. The image is hosted on Docker Hub and can be used to run MockRestAPI. You can configure the Docker image using environment variables and mounted volumes. An example Docker Compose file (`docker-compose-image.yml`) is provided to demonstrate how to set up a MockRestAPI instance using environment variables and volumes.
 
 Also, you can build the docker image from the source code and run using the `docker-compose-build.yml` docker compose file.
 
+Checkout the repository, run the command `docker compose -f .\docker-compose-image.yml up`. This will use the config stored in the `example` folder. You can access example APIs via,
+
+* `http://localhost:5000/management/swagger`
+* `http://localhost:5000/chess/swagger`
+* `http://localhost:5000/petstore/swagger`
+
+### Azure
+
+To deploy it to azure app service, deploy the bicep template `bicep\app.bicep` using the `az deployment group create --resource-group <resource group name> --template-file .\bicep\app.bicep`
+
+Once the template is deployed, then open up the storage account, then copy the content in the folder `Example\Endpoints` (the sub folder `petstore`) to the file share `endpoints`. Also the content of the folder `Example\MockCalls` to the file share `mockcalls`. Then the examples can be accessible via,
+
+* `http://<base url>/management/swagger`
+* `http://<base url>/chess/swagger`
+* `http://<base url>/petstore/swagger`
+
 ### Configuration
+
 MockRestAPI allows you to host a mock API using a Swagger file. The Swagger file can be either a file on the file system or a hosted file. The list of APIs can be defined as an array and provided as environment variables to the Docker container. Physical Swagger files should be placed inside a folder defined by the `Endpoints__ApiDefSubFolderName` environment variable. In the examples, we have mounted the folder as a volume in the Docker Compose.
+
+**Note** : Change the `example\docker.env` file to change the config when running locally. To change the config when running in Azure, change app config section in the `bicep\app.bicep` file.
 
 #### Example: Physical Swagger File
 ```bash
