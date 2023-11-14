@@ -35,13 +35,12 @@ namespace API.Tests.Services
         public async Task GivenMockAPISwaggerRequest_WhenHandleAsync_ThenReturnSwaggerContent()
         {
             //Arrange
-            string baseUrl = "http://localhost";
             string method = "get";
             string apiName = "mockApi";
             string swaggerJson = "{ \"id\" = \"test\" }";
 
             var context = CreateContext(method, $"/{apiName}/swagger/v2/swagger.json");
-            _swaggerService.GetSwaggerJsonAsync(Arg.Any<string>(), Arg.Any<string>())
+            _swaggerService.GetSwaggerJsonAsync(Arg.Any<string>())
                 .Returns(swaggerJson);
 
             //Act
@@ -51,7 +50,7 @@ namespace API.Tests.Services
             //Assert
             result.Should().BeTrue();
             _logger.ReceivedOnce(LogLevel.Information, "Handling the path");
-            await _swaggerService.Received(1).GetSwaggerJsonAsync(baseUrl, apiName);
+            await _swaggerService.Received(1).GetSwaggerJsonAsync( apiName);
             GetResponseBody().Should().Be(swaggerJson);
             context.Response.StatusCode.Should().Be(200);
         }
@@ -60,14 +59,13 @@ namespace API.Tests.Services
         public async Task GivenMockAPIRequestAndReturnsValidResponse_WhenHandleAsync_ThenCallResponseGenerator()
         {
             //Arrange
-            string baseUrl = "http://localhost";
             string method = "get";
             string apiName = "mockApi";
             string requestPath = "pet/21";
             string responsePayload = "{ \"id\" = \"test\" }";
 
             var context = CreateContext(method, $"/{apiName}/{requestPath}");
-            _responseGeneratorService.GenerateJsonResponseAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<HttpRequest>())
+            _responseGeneratorService.GenerateJsonResponseAsync( Arg.Any<string>(), Arg.Any<string>(), Arg.Any<HttpRequest>())
                 .Returns(new KeyValuePair<string, string?>("200", responsePayload));
 
             //Act
@@ -77,7 +75,7 @@ namespace API.Tests.Services
             //Assert
             result.Should().BeTrue();
             _logger.ReceivedOnce(LogLevel.Information, "Handling the path");
-            await _responseGeneratorService.Received(1).GenerateJsonResponseAsync(baseUrl, apiName, requestPath, context.Request);
+            await _responseGeneratorService.Received(1).GenerateJsonResponseAsync( apiName, requestPath, context.Request);
             GetResponseBody().Should().Be(responsePayload);
             context.Response.StatusCode.Should().Be(200);
         }

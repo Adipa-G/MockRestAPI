@@ -24,7 +24,6 @@ namespace API.Tests.Services
         private readonly LoggerMock<SwaggerExampleResponseBuilderService> _logger;
         private readonly ISwaggerService _swaggerService;
 
-        private const string BaseUrl = "https://localhost:3000";
         private const string ApiName = "petstore";
         private const string Path = "/pet";
         private const string Method = "post";
@@ -39,14 +38,14 @@ namespace API.Tests.Services
         public async Task GivenNullSpec_WhenGetResponse_ThenReturnNull()
         {
             //Arrange
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)null));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, Path, CreateRequest());
+            var result = await sut.GetResponse( ApiName, Path, CreateRequest());
             result.Should().Be(default(KeyValuePair<string,string>));
             _logger.ReceivedOnce(LogLevel.Error, "Null open api spec for API");
         }
@@ -58,14 +57,14 @@ namespace API.Tests.Services
             var openApiDoc = CreateDocument();
             AddPath(openApiDoc, Path);
 
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, "/something-else", CreateRequest());
+            var result = await sut.GetResponse( ApiName, "/something-else", CreateRequest());
             result.Should().Be(default(KeyValuePair<string, string>));
             _logger.ReceivedOnce(LogLevel.Error, "Unable to find matching path for API");
         }
@@ -77,14 +76,14 @@ namespace API.Tests.Services
             var openApiDoc = CreateDocument();
             AddPath(openApiDoc, Path);
 
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, Path, CreateRequest());
+            var result = await sut.GetResponse( ApiName, Path, CreateRequest());
             result.Should().Be(default(KeyValuePair<string, string>));
             _logger.ReceivedOnce(LogLevel.Error, "Unable to find matching method for API");
         }
@@ -97,14 +96,14 @@ namespace API.Tests.Services
             var path = AddPath(openApiDoc, Path);
             AddOperation(path, OperationType.Post);
 
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, Path, CreateRequest());
+            var result = await sut.GetResponse( ApiName, Path, CreateRequest());
             result.Should().Be(default(KeyValuePair<string, string>));
             _logger.ReceivedOnce(LogLevel.Error, "No responses are defined for the API");
         }
@@ -117,14 +116,14 @@ namespace API.Tests.Services
             var path = AddPath(openApiDoc, Path);
             var operation = AddOperation(path, OperationType.Post);
             AddResponse(operation,"200");
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, Path, CreateRequest());
+            var result = await sut.GetResponse( ApiName, Path, CreateRequest());
             result.Should().Be(default(KeyValuePair<string, string>));
             _logger.ReceivedOnce(LogLevel.Error, "No contents are defined for the API");
         }
@@ -139,14 +138,14 @@ namespace API.Tests.Services
             var response = AddResponse(operation, "200");
             var mediaType = AddContent(response, "application/json");
             AddProperty(mediaType, "id", new OpenApiInteger(10));
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, Path, CreateRequest());
+            var result = await sut.GetResponse( ApiName, Path, CreateRequest());
             result.Should().NotBe(default(KeyValuePair<string, string>));
             result.Value.Should().Be(JsonConvert.SerializeObject(new { id = 10 }));
         }
@@ -161,14 +160,14 @@ namespace API.Tests.Services
             var response = AddResponse(operation, "200");
             var mediaType = AddContent(response, "application/json");
             AddProperty(mediaType, "id", new OpenApiInteger(10));
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, "pet/23", CreateRequest("get"));
+            var result = await sut.GetResponse( ApiName, "pet/23", CreateRequest("get"));
             result.Should().NotBe(default(KeyValuePair<string, string>));
             result.Value.Should().Be(JsonConvert.SerializeObject(new { id = 10 }));
         }
@@ -188,14 +187,14 @@ namespace API.Tests.Services
                 new OpenApiObject() { { "id", new OpenApiInteger(11) }, { "name", new OpenApiString("baw baw") } });
             SetExample(mediaType,
                 new OpenApiObject() { { "id", new OpenApiInteger(12) }, { "name", new OpenApiString("no baw baw") } });
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, "pet/54", CreateRequest("get"));
+            var result = await sut.GetResponse( ApiName, "pet/54", CreateRequest("get"));
             result.Should().NotBe(default(KeyValuePair<string, string>));
             result.Value.Should().Be(JsonConvert.SerializeObject(new { id = 11, name = "baw baw" }));
         }
@@ -213,14 +212,14 @@ namespace API.Tests.Services
                 new OpenApiObject() { { "id", new OpenApiInteger(10) }, { "name", new OpenApiString("no baw baw") } });
             AddExample(mediaType, "54",
                 new OpenApiObject() { { "id", new OpenApiInteger(11) }, { "name", new OpenApiString("baw baw") } });
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, "pet/65", CreateRequest("get"));
+            var result = await sut.GetResponse( ApiName, "pet/65", CreateRequest("get"));
             result.Should().NotBe(default(KeyValuePair<string, string>));
             result.Value.Should().Be(JsonConvert.SerializeObject(new { id = 10, name = "no baw baw" }));
         }
@@ -240,14 +239,14 @@ namespace API.Tests.Services
                 new OpenApiObject() { { "id", new OpenApiInteger(11) }, { "name", new OpenApiString("no baw baw") } });
             SetExample(mediaType,
                 new OpenApiObject() { { "id", new OpenApiInteger(12) }, { "name", new OpenApiString("baw baw") } });
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, "pet/65", CreateRequest("get"));
+            var result = await sut.GetResponse( ApiName, "pet/65", CreateRequest("get"));
             result.Should().NotBe(default(KeyValuePair<string, string>));
             result.Value.Should().Be(JsonConvert.SerializeObject(new { id = 12, name = "baw baw" }));
         }
@@ -284,14 +283,14 @@ namespace API.Tests.Services
             AddProperty(mediaType, nameof(dateValue), new OpenApiDateTime(dateValue));
             AddProperty(mediaType, nameof(dateTimeValue), new OpenApiDateTime(dateTimeValue));
             AddProperty(mediaType, nameof(passwordValue), new OpenApiPassword(passwordValue));
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, Method, CreateRequest());
+            var result = await sut.GetResponse( ApiName, Method, CreateRequest());
             result.Should().NotBe(default(KeyValuePair<string, string>));
             result.Value.Should().Be(JsonConvert.SerializeObject(new
             {
@@ -323,14 +322,14 @@ namespace API.Tests.Services
             {
                 {"id", new OpenApiInteger(20)}
             });
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, Method, CreateRequest());
+            var result = await sut.GetResponse( ApiName, Method, CreateRequest());
             result.Should().NotBe(default(KeyValuePair<string, string>));
             result.Value.Should().Be(JsonConvert.SerializeObject(new
             {
@@ -357,14 +356,14 @@ namespace API.Tests.Services
                 new OpenApiInteger(12),
                 new OpenApiInteger(15)
             });
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, Method, CreateRequest());
+            var result = await sut.GetResponse( ApiName, Method, CreateRequest());
             result.Should().NotBe(default(KeyValuePair<string, string>));
             result.Value.Should().Be(JsonConvert.SerializeObject(new
             {
@@ -391,14 +390,14 @@ namespace API.Tests.Services
                     {"name", new OpenApiSchema(){Example = new OpenApiString("test")}}
                 }
             });
-            _swaggerService.GetOpenApiDocumentAsync(BaseUrl, ApiName)
+            _swaggerService.GetOpenApiDocumentAsync( ApiName)
                 .Returns(Task.FromResult((OpenApiDocument?)openApiDoc));
 
             //Act
             var sut = CreateSut();
 
             //Assert
-            var result = await sut.GetResponse(BaseUrl, ApiName, Method, CreateRequest());
+            var result = await sut.GetResponse( ApiName, Method, CreateRequest());
             result.Should().NotBe(default(KeyValuePair<string, string>));
             result.Value.Should().Be(JsonConvert.SerializeObject(new
             {

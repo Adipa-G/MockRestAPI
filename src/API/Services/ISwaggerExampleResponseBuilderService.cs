@@ -2,5 +2,5 @@
 
 public interface ISwaggerExampleResponseBuilderService
 {
-    Task<KeyValuePair<string, string?>> GetResponse(string baseUrl,string apiName, string requestPath, HttpRequest request);
+    Task<KeyValuePair<string, string?>> GetResponse(string apiName, string requestPath, HttpRequest request);
 }

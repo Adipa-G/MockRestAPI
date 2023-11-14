@@ -60,7 +60,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(false);
@@ -93,7 +93,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(false);
@@ -127,7 +127,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(false);
@@ -171,7 +171,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(false);
@@ -206,7 +206,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(true);
@@ -239,7 +239,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(false);
@@ -273,7 +273,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(false);
@@ -318,7 +318,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(false);
@@ -353,7 +353,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(true);
@@ -393,7 +393,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(false);
@@ -442,7 +442,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(false);
@@ -483,7 +483,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             await ExpectExampleResponseBuilderToReceiveCalls(true);
@@ -518,14 +518,14 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             result.Key.Should().Be("404");
             result.Value.Should().Be("I have never met this man in my life.");
 
             //Act
-            result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             result.Key.Should().Be("200");
@@ -542,16 +542,16 @@ namespace API.Tests.Services
             string responsePayload = "{ \"id\" = \"test\" }";
 
             var context = CreateContext(method, $"/{ApiName}/{requestPath}");
-            _exampleResponseBuilder.GetResponse(BaseUrl, ApiName, requestPath, context.Request)
+            _exampleResponseBuilder.GetResponse( ApiName, requestPath, context.Request)
                 .Returns(new KeyValuePair<string, string?>(responseStatusCode, responsePayload));
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             result.Should().NotBeEquivalentTo(default(KeyValuePair<string, string?>));
-            await _exampleResponseBuilder.Received(1).GetResponse(BaseUrl, ApiName,requestPath, context.Request);
+            await _exampleResponseBuilder.Received(1).GetResponse( ApiName,requestPath, context.Request);
             result.Key.Should().Be(responseStatusCode);
             result.Value.Should().Be(responsePayload);
         }
@@ -567,18 +567,18 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var result = await sut.GenerateJsonResponseAsync(BaseUrl, ApiName, requestPath, context.Request);
+            var result = await sut.GenerateJsonResponseAsync( ApiName, requestPath, context.Request);
 
             //Assert
             result.Should().NotBeEquivalentTo(default(KeyValuePair<string, string?>));
-            await _exampleResponseBuilder.Received(1).GetResponse(BaseUrl, ApiName, requestPath, context.Request);
+            await _exampleResponseBuilder.Received(1).GetResponse( ApiName, requestPath, context.Request);
             result.Key.Should().Be("404");
             result.Value.Should().Be("I have never met this man in my life.");
         }
 
         private async Task ExpectExampleResponseBuilderToReceiveCalls(bool toReceive)
         {
-            await _exampleResponseBuilder.Received(toReceive ? 1 : 0).GetResponse(Arg.Any<string>(), Arg.Any<string>(),
+            await _exampleResponseBuilder.Received(toReceive ? 1 : 0).GetResponse( Arg.Any<string>(),
                 Arg.Any<string>(), Arg.Any<HttpRequest>());
         }
 

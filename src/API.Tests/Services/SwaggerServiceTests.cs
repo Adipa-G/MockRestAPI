@@ -54,7 +54,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync(ApiName);
 
             //Assert
             resultDoc.Should().Be(openApiDocument);
@@ -74,7 +74,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync(ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -101,7 +101,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync( ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -135,7 +135,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync(ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -169,7 +169,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync(ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -197,7 +197,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync(ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -234,7 +234,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync( ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -271,14 +271,14 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync( ApiName);
 
             //Assert
             resultDoc.Should().NotBeNull();
             resultDoc?.Paths.Should().HaveCount(1);
             resultDoc?.Servers.Should().HaveCount(1);
             resultDoc?.Servers[0].Should().BeEquivalentTo(new {
-                Url = $"http://localhost:3030/{ApiName}"
+                Url = $"/{ApiName}"
             });
         }
 
@@ -315,7 +315,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync("http://localhost:3030", ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync( ApiName);
 
             //Assert
             resultDoc.Should().NotBeNull();
@@ -352,7 +352,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var swaggerJson = await sut.GetSwaggerJsonAsync("http://localhost:3030", ApiName);
+            var swaggerJson = await sut.GetSwaggerJsonAsync( ApiName);
 
             //Assert
             swaggerJson.Should().BeNullOrWhiteSpace();
@@ -389,7 +389,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var swaggerJson = await sut.GetSwaggerJsonAsync("http://localhost:3030", ApiName);
+            var swaggerJson = await sut.GetSwaggerJsonAsync( ApiName);
 
             //Assert
             swaggerJson.Should().NotBeNullOrWhiteSpace();
@@ -405,7 +405,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var swaggerJson = await sut.GetSwaggerJsonAsync("http://localhost:3030", Constants.ManagementApiName);
+            var swaggerJson = await sut.GetSwaggerJsonAsync( Constants.ManagementApiName);
 
             //Assert
             swaggerJson.Should().NotBeNullOrWhiteSpace();
