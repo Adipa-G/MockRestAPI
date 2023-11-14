@@ -22,7 +22,7 @@ namespace API.Services
             _swaggerExampleResponseBuilderService = swaggerExampleResponseBuilderService;
         }
 
-        public async Task<KeyValuePair<string, string?>> GenerateJsonResponseAsync(string baseUrl, string apiName, string requestPath, HttpRequest request)
+        public async Task<KeyValuePair<string, string?>> GenerateJsonResponseAsync(string apiName, string requestPath, HttpRequest request)
         {
             var cacheKey = $"{apiName.ToLower()}-{request.Method.ToUpper()}-{requestPath.ToLower()}";
             var apiCalls = _memoryCache.Get<List<MockApiCall>?>(cacheKey);
@@ -34,7 +34,7 @@ namespace API.Services
             }
             
             var response =
-                await _swaggerExampleResponseBuilderService.GetResponse(baseUrl, apiName, requestPath, request);
+                await _swaggerExampleResponseBuilderService.GetResponse(apiName, requestPath, request);
             if (!response.Equals(default(KeyValuePair<string, string?>)))
             {
                 return response;

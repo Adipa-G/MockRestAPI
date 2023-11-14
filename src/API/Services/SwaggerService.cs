@@ -33,9 +33,9 @@ namespace API.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<string> GetSwaggerJsonAsync(string baseUrl, string apiName)
+        public async Task<string> GetSwaggerJsonAsync(string apiName)
         {
-            var doc = await GetOpenApiDocumentAsync(baseUrl, apiName);
+            var doc = await GetOpenApiDocumentAsync(apiName);
             if (doc == null)
             {
                 return string.Empty;
@@ -52,7 +52,7 @@ namespace API.Services
             return json;
         }
 
-        public async Task<OpenApiDocument?> GetOpenApiDocumentAsync(string baseUrl, string apiName)
+        public async Task<OpenApiDocument?> GetOpenApiDocumentAsync(string apiName)
         {
             var cacheKey = $"open-api-document-{apiName}";
             if (_memoryCache.TryGetValue(cacheKey, out OpenApiDocument? doc))
@@ -85,7 +85,7 @@ namespace API.Services
                 try
                 {
                     doc = new OpenApiStreamReader().Read(stream, out diagnostic);
-                    doc.Servers = new List<OpenApiServer>() { new() { Url = $"{baseUrl}/{apiName}" } };
+                    doc.Servers = new List<OpenApiServer>() { new() { Url = $"/{apiName}" } };
                     _memoryCache.Set(cacheKey, doc, TimeSpan.FromSeconds(60));
                 }
                 catch (Exception e)

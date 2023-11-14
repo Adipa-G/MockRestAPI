@@ -2,5 +2,5 @@
 
 public interface IResponseGeneratorService
 {
-    Task<KeyValuePair<string, string?>> GenerateJsonResponseAsync(string baseUrl, string apiName, string requestPath, HttpRequest request);
+    Task<KeyValuePair<string, string?>> GenerateJsonResponseAsync(string apiName, string requestPath, HttpRequest request);
 }

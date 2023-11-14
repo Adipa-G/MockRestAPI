@@ -4,6 +4,6 @@ namespace API.Services;
 
 public interface ISwaggerService
 {
-    Task<string> GetSwaggerJsonAsync(string baseUrl, string apiName);
-    Task<OpenApiDocument?> GetOpenApiDocumentAsync(string baseUrl, string apiName);
+    Task<string> GetSwaggerJsonAsync(string apiName);
+    Task<OpenApiDocument?> GetOpenApiDocumentAsync(string apiName);
 }

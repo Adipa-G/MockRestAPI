@@ -18,9 +18,9 @@ namespace API.Services
             _swaggerService = swaggerService;
         }
 
-        public async Task<KeyValuePair<string,string?>> GetResponse(string baseUrl,string apiName, string requestPath, HttpRequest request)
+        public async Task<KeyValuePair<string,string?>> GetResponse(string apiName, string requestPath, HttpRequest request)
         {
-            var openApiSpec = await _swaggerService.GetOpenApiDocumentAsync(baseUrl, apiName);
+            var openApiSpec = await _swaggerService.GetOpenApiDocumentAsync(apiName);
             if (openApiSpec == null)
             {
                 _logger.LogError("Null open api spec for API : [{apiName}]. Unable to process.", apiName);
