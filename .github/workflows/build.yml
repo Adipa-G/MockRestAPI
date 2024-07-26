@@ -1,6 +1,6 @@
 name: MockRestAPI
 run-name: Build and Test
-on: [push]
+on: [push, workflow_dispatch]
 jobs:
   build-and-test-solution:
     permissions: write-all
