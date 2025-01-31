@@ -34,7 +34,7 @@ jobs:
           reports: "**/coverage.cobertura.xml"
           targetdir: TestResults
       - name: Publish code coverage
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: code-coverage
           path: "**/*.html"
