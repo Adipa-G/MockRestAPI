@@ -3,6 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 RUN mkdir code
 WORKDIR code
 COPY src/*.sln .
+COPY src/*.props .
 COPY src/API ./API
 COPY src/API.Tests ./API.Tests
 RUN dotnet restore
