@@ -37,7 +37,7 @@ namespace API.Controller
         }
 
         [HttpPost("mock-call/{callId}")]
-        public ActionResult RegisterMockCall([FromRoute] string callId, [FromBody]MockApiCall mockApiCall)
+        public ActionResult RegisterMockCall([FromRoute] string callId, [FromBody] MockApiCall mockApiCall)
         {
             var cacheKey = $"{mockApiCall.ApiName.ToLower()}-{mockApiCall.Method.ToUpper()}-{mockApiCall.ApiPath.ToLower().TrimStart('/')}";
             var calls = _memoryCache.GetOrCreate(cacheKey, _ => new List<MockApiCall>());
@@ -46,7 +46,7 @@ namespace API.Controller
             {
                 calls?.Remove(call);
             }
-            
+
             var idMappings = _memoryCache.Get<ConcurrentDictionary<string, string>>(Constants.IdMappingCacheKey);
             idMappings?.TryAdd(callId, cacheKey);
 
@@ -57,11 +57,11 @@ namespace API.Controller
             var absoluteExpiration = (calls != null && calls.Any()) ? calls.Max(c => c.Expiry) : DateTimeOffset.Now;
             _memoryCache.Set(cacheKey, calls, absoluteExpiration);
 
-            return Ok(new {id = callId});
+            return Ok(new { id = callId });
         }
 
         [HttpDelete("mock-call/{callId}")]
-        public ActionResult RemoveMockCall([FromRoute]string callId)
+        public ActionResult RemoveMockCall([FromRoute] string callId)
         {
             var idMappings = _memoryCache.Get<ConcurrentDictionary<string, string>>(Constants.IdMappingCacheKey);
             var cacheKey = idMappings != null && idMappings.ContainsKey(callId) ? idMappings?[callId] : null;
@@ -80,7 +80,7 @@ namespace API.Controller
         public OkObjectResult GetAllMockCalls()
         {
             var idMappings = _memoryCache.Get<ConcurrentDictionary<string, string>>(Constants.IdMappingCacheKey);
-            var result = new ExpandoObject() as IDictionary<string,object?>;
+            var result = new ExpandoObject() as IDictionary<string, object?>;
             if (idMappings != null)
             {
                 foreach (var mapping in idMappings)

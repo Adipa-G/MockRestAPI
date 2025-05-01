@@ -32,7 +32,7 @@ namespace API.Services
             {
                 return new KeyValuePair<string, string?>(match.ResponseCode.ToString(), JsonSerializer.Serialize(match.Response));
             }
-            
+
             var response =
                 await _swaggerExampleResponseBuilderService.GetResponse(apiName, requestPath, request);
             if (!response.Equals(default(KeyValuePair<string, string?>)))
@@ -132,7 +132,7 @@ namespace API.Services
             return MatchGroupList(matchQueryGroupList, queryGroupList);
         }
 
-        private KeyValuePair<bool,int> CheckForHeaderMatch(HttpRequest request, MockApiCall apiCall)
+        private KeyValuePair<bool, int> CheckForHeaderMatch(HttpRequest request, MockApiCall apiCall)
         {
             if (apiCall.HeadersToMatch == null || apiCall.HeadersToMatch.Count == 0)
                 return new KeyValuePair<bool, int>(true, 1);
@@ -149,9 +149,9 @@ namespace API.Services
             return MatchGroupList(matchQueryGroupList, headerGroupList);
         }
 
-        private KeyValuePair<bool,int> CheckBodyPathMatch(string requestJson, MockApiCall apiCall)
+        private KeyValuePair<bool, int> CheckBodyPathMatch(string requestJson, MockApiCall apiCall)
         {
-            if (apiCall.BodyPathsToMatch == null || apiCall.BodyPathsToMatch.Count == 0 )
+            if (apiCall.BodyPathsToMatch == null || apiCall.BodyPathsToMatch.Count == 0)
                 return new KeyValuePair<bool, int>(true, 1);
 
             if (string.IsNullOrWhiteSpace(requestJson))
@@ -184,7 +184,7 @@ namespace API.Services
             }
         }
 
-        private KeyValuePair<bool,int> MatchGroupList(List<KeyValuePair<string, List<string>>> matchGroupList, List<KeyValuePair<string, List<string?>>> queryGroupList)
+        private KeyValuePair<bool, int> MatchGroupList(List<KeyValuePair<string, List<string>>> matchGroupList, List<KeyValuePair<string, List<string?>>> queryGroupList)
         {
             var isMatch = true;
             var score = 0;
@@ -196,7 +196,7 @@ namespace API.Services
                     score += 10;
             }
 
-            return  new KeyValuePair<bool, int>(isMatch, isMatch ? score : 0);
+            return new KeyValuePair<bool, int>(isMatch, isMatch ? score : 0);
         }
     }
 }

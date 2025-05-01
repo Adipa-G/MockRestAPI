@@ -17,7 +17,7 @@ namespace API.Services
         private readonly ConfigOptions _configOptions;
         private readonly IFileSystem _fileSystem;
         private readonly IMemoryCache _memoryCache;
-        private ILogger<MockCallsLoader> _logger;
+        private readonly ILogger<MockCallsLoader> _logger;
 
         public MockCallsLoader(IOptions<ConfigOptions> configOptions,
             IFileSystem fileSystem,
@@ -40,13 +40,13 @@ namespace API.Services
                 _logger.LogInformation("Did not found any mock calls in the folder {folder}", rootFolderAbsolutePath);
                 return;
             }
-                
+
             foreach (IFileInfo jsonFile in allFiles)
             {
                 try
                 {
                     var json = await _fileSystem.File.ReadAllTextAsync(jsonFile.FullName);
-                    var apiList =  (IDictionary<string,object?>)JsonSerializer.Deserialize<ExpandoObject>(json)!;
+                    var apiList = (IDictionary<string, object?>)JsonSerializer.Deserialize<ExpandoObject>(json)!;
                     foreach (var api in apiList)
                     {
                         var apiName = api.Key;
@@ -112,7 +112,7 @@ namespace API.Services
 
         private IDirectoryInfo? GetBaseDirectory()
         {
-            return DirectoryUtils.GetBaseDirectory(_logger ,_fileSystem, _configOptions.MockApiCallsSubFolder);
+            return DirectoryUtils.GetBaseDirectory(_logger, _fileSystem, _configOptions.MockApiCallsSubFolder);
         }
     }
 }
