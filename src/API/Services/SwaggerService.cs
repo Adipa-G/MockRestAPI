@@ -40,7 +40,7 @@ namespace API.Services
             {
                 return string.Empty;
             }
-            
+
             using var memoryStream = new MemoryStream();
             var openApiWriter = new OpenApiJsonWriter(new StreamWriter(memoryStream));
             doc.SerializeAsV3(openApiWriter);
@@ -78,7 +78,7 @@ namespace API.Services
                     ? await OpenOpenApiDefinitionFromHttp(apiName, apiDef)
                     : await OpenOpenApiDefinitionFromFile(apiName, apiDef);
             }
-            
+
             if (stream != Stream.Null)
             {
                 OpenApiDiagnostic? diagnostic = null;
@@ -143,7 +143,7 @@ namespace API.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e,"Unknown error trying to open the swagger file for the API : [{apiName}]", apiName);
+                _logger.LogError(e, "Unknown error trying to open the swagger file for the API : [{apiName}]", apiName);
                 return Task.FromResult((Stream?)null);
             }
         }
@@ -157,7 +157,7 @@ namespace API.Services
 
         private IDirectoryInfo? GetBaseDirectory()
         {
-            return DirectoryUtils.GetBaseDirectory( _logger ,_fileSystem, _configOptions.ApiDefSubFolderName);
+            return DirectoryUtils.GetBaseDirectory(_logger, _fileSystem, _configOptions.ApiDefSubFolderName);
         }
     }
 }

@@ -11,14 +11,14 @@ namespace API.Services
         private readonly ILogger<SwaggerExampleResponseBuilderService> _logger;
         private readonly ISwaggerService _swaggerService;
 
-        public SwaggerExampleResponseBuilderService(ILogger<SwaggerExampleResponseBuilderService> logger, 
+        public SwaggerExampleResponseBuilderService(ILogger<SwaggerExampleResponseBuilderService> logger,
             ISwaggerService swaggerService)
         {
             _logger = logger;
             _swaggerService = swaggerService;
         }
 
-        public async Task<KeyValuePair<string,string?>> GetResponse(string apiName, string requestPath, HttpRequest request)
+        public async Task<KeyValuePair<string, string?>> GetResponse(string apiName, string requestPath, HttpRequest request)
         {
             var openApiSpec = await _swaggerService.GetOpenApiDocumentAsync(apiName);
             if (openApiSpec == null)
@@ -26,7 +26,7 @@ namespace API.Services
                 _logger.LogError("Null open api spec for API : [{apiName}]. Unable to process.", apiName);
                 return default;
             }
-                
+
 
             var apiPaths = openApiSpec.Paths.Keys.ToList();
             var matchingApiPath = FindMatchingPath(apiPaths, requestPath);
@@ -36,7 +36,7 @@ namespace API.Services
                 _logger.LogError("Unable to find matching path for API : [{apiName}] for Path : [{path}]. Unable to process.", apiName, requestPath);
                 return default;
             }
-                
+
 
             Enum.TryParse(typeof(OperationType), request.Method, true, out var operationTypeObj);
             var operationType = (OperationType)operationTypeObj!;
@@ -46,7 +46,7 @@ namespace API.Services
                 _logger.LogError("Unable to find matching method for API : [{apiName}] for Method : [{method}]. Unable to process.", apiName, request.Method);
                 return default;
             }
-                
+
 
             var response = operation.Value.Responses.FirstOrDefault(r => r.Key == "200");
             if (response.Equals(default(KeyValuePair<string, OpenApiResponse>)))
@@ -56,9 +56,9 @@ namespace API.Services
                 _logger.LogError("No responses are defined for the API : [{apiName}] for Path : [{path}]. Unable to process.", apiName, requestPath);
                 return default;
             }
-               
+
             var content = response.Value.Content.FirstOrDefault(c => c.Key == request.ContentType);
-            if (content.Equals(default(KeyValuePair<string,OpenApiMediaType>)))
+            if (content.Equals(default(KeyValuePair<string, OpenApiMediaType>)))
                 content = response.Value.Content.FirstOrDefault();
             if (content.Equals(default(KeyValuePair<string, OpenApiMediaType>)))
             {
@@ -117,7 +117,7 @@ namespace API.Services
 
             return string.Empty;
         }
-        
+
         private dynamic? GenerateFromSchema(OpenApiSchema? schema)
         {
             if (schema == null || schema.Properties == null)

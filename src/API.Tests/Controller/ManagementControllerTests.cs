@@ -20,8 +20,8 @@ namespace API.Tests.Controller
 {
     public class ManagementControllerTests
     {
-        private IMemoryCache _memoryCache;
-        private IMockCallsLoader _mockCallsLoader;
+        private readonly IMemoryCache _memoryCache;
+        private readonly IMockCallsLoader _mockCallsLoader;
 
         public ManagementControllerTests()
         {
@@ -54,14 +54,14 @@ namespace API.Tests.Controller
             //Arrange
             var callId = "121232";
             var call = new MockApiCall() { ApiName = "api", Method = "post", ApiPath = "pet/12", CallId = callId };
-            
+
             //Act
             var sut = CreateSut();
             var result = sut.RegisterMockCall(callId, call) as OkObjectResult;
 
             //Assert
             result.Should().NotBeNull();
-            result?.Value.Should().BeEquivalentTo(new {id = callId});
+            result?.Value.Should().BeEquivalentTo(new { id = callId });
         }
 
         [Fact]
@@ -120,10 +120,10 @@ namespace API.Tests.Controller
 
         private void CacheApiMappings(string callId, string cacheKey)
         {
-            _memoryCache.TryGetValue(Constants.IdMappingCacheKey, out Arg.Any<ConcurrentDictionary<string,string>?>())
+            _memoryCache.TryGetValue(Constants.IdMappingCacheKey, out Arg.Any<ConcurrentDictionary<string, string>?>())
                 .Returns(x =>
                 {
-                    x[1] = new ConcurrentDictionary<string,string>(new []{new KeyValuePair<string, string>(callId, cacheKey)});
+                    x[1] = new ConcurrentDictionary<string, string>(new[] { new KeyValuePair<string, string>(callId, cacheKey) });
                     return true;
                 });
         }

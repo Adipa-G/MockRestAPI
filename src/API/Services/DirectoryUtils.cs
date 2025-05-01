@@ -7,7 +7,7 @@ namespace API.Services
 {
     public class DirectoryUtils
     {
-        public static IDirectoryInfo? GetBaseDirectory<T>(ILogger<T> logger,IFileSystem fileSystem, string folderName)
+        public static IDirectoryInfo? GetBaseDirectory<T>(ILogger<T> logger, IFileSystem fileSystem, string folderName)
         {
             var dir = fileSystem.DirectoryInfo.New(AppDomain.CurrentDomain.BaseDirectory);
             do

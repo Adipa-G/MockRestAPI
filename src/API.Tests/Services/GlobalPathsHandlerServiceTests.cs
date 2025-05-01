@@ -50,7 +50,7 @@ namespace API.Tests.Services
             //Assert
             result.Should().BeTrue();
             _logger.ReceivedOnce(LogLevel.Information, "Handling the path");
-            await _swaggerService.Received(1).GetSwaggerJsonAsync( apiName);
+            await _swaggerService.Received(1).GetSwaggerJsonAsync(apiName);
             GetResponseBody().Should().Be(swaggerJson);
             context.Response.StatusCode.Should().Be(200);
         }
@@ -65,7 +65,7 @@ namespace API.Tests.Services
             string responsePayload = "{ \"id\" = \"test\" }";
 
             var context = CreateContext(method, $"/{apiName}/{requestPath}");
-            _responseGeneratorService.GenerateJsonResponseAsync( Arg.Any<string>(), Arg.Any<string>(), Arg.Any<HttpRequest>())
+            _responseGeneratorService.GenerateJsonResponseAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<HttpRequest>())
                 .Returns(new KeyValuePair<string, string?>("200", responsePayload));
 
             //Act
@@ -75,11 +75,11 @@ namespace API.Tests.Services
             //Assert
             result.Should().BeTrue();
             _logger.ReceivedOnce(LogLevel.Information, "Handling the path");
-            await _responseGeneratorService.Received(1).GenerateJsonResponseAsync( apiName, requestPath, context.Request);
+            await _responseGeneratorService.Received(1).GenerateJsonResponseAsync(apiName, requestPath, context.Request);
             GetResponseBody().Should().Be(responsePayload);
             context.Response.StatusCode.Should().Be(200);
         }
-        
+
         private string GetResponseBody()
         {
             return Encoding.UTF8.GetString(_responseBody.ToArray());

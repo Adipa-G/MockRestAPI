@@ -47,7 +47,8 @@ namespace API.Tests.Services
             var cacheKey = $"open-api-document-{ApiName}";
             var openApiDocument = new OpenApiDocument();
 
-            _memoryCache.TryGetValue(cacheKey, out cacheKey).Returns(x => {
+            _memoryCache.TryGetValue(cacheKey, out cacheKey).Returns(x =>
+            {
                 x[1] = openApiDocument;
                 return true;
             });
@@ -101,7 +102,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync( ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync(ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -229,12 +230,12 @@ namespace API.Tests.Services
             _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Returns(true);
 
             var current = new FileSystem().CurrentDirectory();
-            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples","invalid-open-api-def.json")).OpenRead();
+            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples", "invalid-open-api-def.json")).OpenRead();
             _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json"), FileMode.Open).Returns(stream);
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync( ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync(ApiName);
 
             //Assert
             resultDoc.Should().BeNull();
@@ -266,18 +267,19 @@ namespace API.Tests.Services
             _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Returns(true);
 
             var current = new FileSystem().CurrentDirectory();
-            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples","valid-open-api-def.json")).OpenRead();
+            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples", "valid-open-api-def.json")).OpenRead();
             _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json"), FileMode.Open).Returns(stream);
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync( ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync(ApiName);
 
             //Assert
             resultDoc.Should().NotBeNull();
             resultDoc?.Paths.Should().HaveCount(1);
             resultDoc?.Servers.Should().HaveCount(1);
-            resultDoc?.Servers[0].Should().BeEquivalentTo(new {
+            resultDoc?.Servers[0].Should().BeEquivalentTo(new
+            {
                 Url = $"/{ApiName}"
             });
         }
@@ -310,12 +312,12 @@ namespace API.Tests.Services
             _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Returns(true);
 
             var current = new FileSystem().CurrentDirectory();
-            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples","valid-open-api-def.json")).OpenRead();
+            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples", "valid-open-api-def.json")).OpenRead();
             _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json"), FileMode.Open).Returns(stream);
 
             //Act
             var sut = CreateSut();
-            var resultDoc = await sut.GetOpenApiDocumentAsync( ApiName);
+            var resultDoc = await sut.GetOpenApiDocumentAsync(ApiName);
 
             //Assert
             resultDoc.Should().NotBeNull();
@@ -344,15 +346,15 @@ namespace API.Tests.Services
             appDir.GetDirectories().Returns(new[] { apiDefDirectory });
 
             _fileSystem.DirectoryInfo.New(Arg.Any<string>()).Returns(appDir);
-            _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName,ApiName,"swagger.json")).Returns(true);
+            _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Returns(true);
 
             var current = new FileSystem().CurrentDirectory();
-            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples","invalid-open-api-def.json")).OpenRead();
+            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples", "invalid-open-api-def.json")).OpenRead();
             _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json"), FileMode.Open).Returns(stream);
 
             //Act
             var sut = CreateSut();
-            var swaggerJson = await sut.GetSwaggerJsonAsync( ApiName);
+            var swaggerJson = await sut.GetSwaggerJsonAsync(ApiName);
 
             //Assert
             swaggerJson.Should().BeNullOrWhiteSpace();
@@ -384,12 +386,12 @@ namespace API.Tests.Services
             _fileSystem.File.Exists(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json")).Returns(true);
 
             var current = new FileSystem().CurrentDirectory();
-            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples","valid-open-api-def.json")).OpenRead();
-            _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName,ApiName,"swagger.json"), FileMode.Open).Returns(stream);
+            var stream = current.FileSystem.FileInfo.New(Path.Combine("Samples", "valid-open-api-def.json")).OpenRead();
+            _fileSystem.File.Open(Path.Combine(apiDefDirectory.FullName, ApiName, "swagger.json"), FileMode.Open).Returns(stream);
 
             //Act
             var sut = CreateSut();
-            var swaggerJson = await sut.GetSwaggerJsonAsync( ApiName);
+            var swaggerJson = await sut.GetSwaggerJsonAsync(ApiName);
 
             //Assert
             swaggerJson.Should().NotBeNullOrWhiteSpace();
@@ -405,7 +407,7 @@ namespace API.Tests.Services
 
             //Act
             var sut = CreateSut();
-            var swaggerJson = await sut.GetSwaggerJsonAsync( Constants.ManagementApiName);
+            var swaggerJson = await sut.GetSwaggerJsonAsync(Constants.ManagementApiName);
 
             //Assert
             swaggerJson.Should().NotBeNullOrWhiteSpace();

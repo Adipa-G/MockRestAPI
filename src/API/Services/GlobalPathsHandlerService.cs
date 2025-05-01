@@ -27,7 +27,7 @@
             {
                 return false;
             }
-            
+
             _logger.LogInformation("Handling the path {path}", pathStr);
             if (restOfThePath.Contains("swagger/v2/swagger.json"))
             {
@@ -37,7 +37,7 @@
             else
             {
                 var response =
-                    await _responseGeneratorService.GenerateJsonResponseAsync( apiName, restOfThePath, context.Request);
+                    await _responseGeneratorService.GenerateJsonResponseAsync(apiName, restOfThePath, context.Request);
                 await WriteToResponseJsonAsync(context, response.Key, response.Value);
             }
             return true;
@@ -45,7 +45,7 @@
 
         private async Task WriteToResponseJsonAsync(HttpContext context, string responseCodeStr, string? responseJson)
         {
-            int.TryParse(responseCodeStr, out var responseCode  );
+            int.TryParse(responseCodeStr, out var responseCode);
 
             using var buffer = new MemoryStream();
             var stream = context.Response.Body;

@@ -1,20 +1,20 @@
-﻿using API.Options;
-using API.Services;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
+﻿using System.Collections.Concurrent;
 using System.IO.Abstractions;
 
+using API.Models;
+using API.Options;
+using API.Services;
+using API.Tests.Helpers;
+
+using FluentAssertions;
+
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using NSubstitute;
 
 using Xunit;
-using API.Tests.Helpers;
-using API.Models;
-
-using System.Collections.Concurrent;
-
-using FluentAssertions;
 
 namespace API.Tests.Services
 {
@@ -61,7 +61,7 @@ namespace API.Tests.Services
             var path = Path.Combine("Samples", "valid-mock-call.json");
             var json = await File.ReadAllTextAsync(path);
             var folder = SetupFolder("mock-api-calls");
-            SetupFile(folder.Name, new []{"a.json"}, new []{json});
+            SetupFile(folder.Name, new[] { "a.json" }, new[] { json });
 
             //Act
             var sut = CreateSut();
@@ -121,7 +121,7 @@ namespace API.Tests.Services
             _logger.ReceivedOnce(LogLevel.Error, "Ignoring the call");
         }
 
-        private void SetupFile(string folderName,string[] fileNames, string[] fileContents)
+        private void SetupFile(string folderName, string[] fileNames, string[] fileContents)
         {
             var folder = SetupFolder(folderName);
             var files = new List<IFileInfo>();

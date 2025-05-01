@@ -22,7 +22,7 @@ builder.Services
     .AddSingleton<IFileSystem, FileSystem>()
     .AddHttpClient()
     .AddScoped<IGlobalPathsHandlerService, GlobalPathsHandlerService>()
-    .AddScoped<ISwaggerService,SwaggerService>()
+    .AddScoped<ISwaggerService, SwaggerService>()
     .AddScoped<ISwaggerExampleResponseBuilderService, SwaggerExampleResponseBuilderService>()
     .AddScoped<IResponseGeneratorService, ResponseGeneratorService>()
     .AddSingleton<IMockCallsLoader, MockCallsLoader>()
