@@ -1,5 +1,4 @@
 ﻿using System.IO.Abstractions;
-using System.IO.Abstractions.Extensions;
 
 using API.Options;
 using API.Services;

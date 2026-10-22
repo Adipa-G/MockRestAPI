@@ -16,7 +16,7 @@ namespace API.Tests.Helpers
             return false;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             _events.Push(new ReceivedLogEvent { Level = logLevel, Message = state?.ToString() });
         }

@@ -80,7 +80,7 @@ namespace API.Tests.Services
                 ResponseCode = 200,
                 ReturnOnlyForNthMatch = 2
             });
-            Assert.NotStrictEqual(cache[0].Response.ToString(), @"{
+            Assert.NotStrictEqual(cache[0].Response!.ToString(), @"{
                 ""id"": 38,
                 ""name"": ""Scooby Doo"",
                 ""category"": {
